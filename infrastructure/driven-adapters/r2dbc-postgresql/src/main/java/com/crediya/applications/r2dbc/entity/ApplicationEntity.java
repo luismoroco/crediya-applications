@@ -1,7 +1,5 @@
 package com.crediya.applications.r2dbc.entity;
 
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
@@ -19,8 +17,5 @@ public class ApplicationEntity {
   private Integer deadline;
   private String email;
   private Integer applicationStatusId;
-
-  @ManyToOne
-  @JoinColumn(name = "loan_type_id")
-  private LoanTypeEntity loanType;
+  private Integer loanTypeId;
 }

@@ -1,8 +1,15 @@
 pluginManagement {
     repositories {
-        //mavenLocal()
+        mavenLocal()
         //maven { url = '...' }
         gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
     }
 }
 
