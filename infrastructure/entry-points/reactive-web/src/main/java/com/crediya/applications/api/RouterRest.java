@@ -31,7 +31,7 @@ public class RouterRest {
         beanMethod = "listenPOSTStartApplication",
         operation = @Operation(
           operationId = "startApplication",
-          summary = "Iniciar una aplicación de crédito",
+          summary = "Init application",
           requestBody = @RequestBody(
             required = true,
             content = @Content(
@@ -39,7 +39,7 @@ public class RouterRest {
               schema = @Schema(implementation = StartApplicationServerRequest.class),
               examples = {
                 @ExampleObject(
-                  name = "Ejemplo de solicitud",
+                  name = "Example",
                   value = """
                                   {
                                     "amount": 5000,
@@ -54,8 +54,8 @@ public class RouterRest {
             )
           ),
           responses = {
-            @ApiResponse(responseCode = "200", description = "Aplicación iniciada exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
           }
         )
       )
