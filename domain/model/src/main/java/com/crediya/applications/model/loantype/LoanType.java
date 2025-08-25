@@ -3,6 +3,8 @@ package com.crediya.applications.model.loantype;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class LoanType {
@@ -11,13 +13,13 @@ public class LoanType {
   private String name;
   private Long maximumAmount;
   private Long minimumAmount;
-  private Integer interestRate;
+  private BigDecimal interestRate;
   private Boolean automaticValidation;
 
   public LoanType() {
   }
 
-  public LoanType(String name, Long loanTypeId, Long maximumAmount, Long minimumAmount, Integer interestRate,
+  public LoanType(String name, Long loanTypeId, Long maximumAmount, Long minimumAmount, BigDecimal interestRate,
                   Boolean automaticValidation) {
     this.name = name;
     this.loanTypeId = loanTypeId;

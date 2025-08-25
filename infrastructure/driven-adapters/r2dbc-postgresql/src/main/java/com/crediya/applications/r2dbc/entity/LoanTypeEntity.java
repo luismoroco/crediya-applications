@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.math.BigDecimal;
+
 @Table("loan_type")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +18,6 @@ public class LoanTypeEntity {
   private String name;
   private Long maximumAmount;
   private Long minimumAmount;
-  private Integer interestRate;
+  private BigDecimal interestRate;
   private Boolean automaticValidation;
 }

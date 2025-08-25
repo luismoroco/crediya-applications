@@ -11,6 +11,12 @@ spring:
       path: "/h2"
   profiles:
     include: null
+  liquibase:
+    enabled: true
+    url: jdbc:postgresql://localhost:5433/crediya
+    user: admin
+    password: admin123
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
 adapters:
   r2dbc:
     host: "localhost"

@@ -1,0 +1,175 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0-create-updated-at-column-function
+      author: com.crediya.dev
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: true
+            dbms: postgresql
+            sql: |
+              CREATE OR REPLACE FUNCTION update_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+  - changeSet:
+      id: 1-create-applications-schema
+      author: com.crediya.dev
+      changes:
+        - createTable:
+            tableName: application_status
+            columns:
+              - column:
+                  name: application_status_id
+                  type: INT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO application_status(application_status_id, name, description)
+              VALUES (1, 'ACTIVE', 'Active'),
+                     (2, 'PENDING', 'Pending');
+
+        - createTable:
+            tableName: loan_type
+            columns:
+              - column:
+                  name: loan_type_id
+                  type: INT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: minimum_amount
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: maximum_amount
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: interest_rate
+                  type: DECIMAL(5,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: automatic_validation
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE "loan_type"
+              ADD CONSTRAINT check_interest_rate_greater_than
+                CHECK (interest_rate >= 0.00) NOT VALID;
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO loan_type (loan_type_id, name, minimum_amount, maximum_amount, interest_rate, automatic_validation) 
+              VALUES (1, 'PERSONAL_LOAN', 50000, 5000000, 12.50, TRUE);
+
+        - createTable:
+            tableName: applications
+            columns:
+              - column:
+                  name: application_id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: amount
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deadline
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: application_status_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loan_type_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              CREATE TRIGGER update_applications_updated_at
+              BEFORE UPDATE ON "applications"
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE "applications"
+              ADD CONSTRAINT check_amount_greater_than
+                CHECK (amount >= 0) NOT VALID,
+              ADD CONSTRAINT check_email_contains_at 
+                CHECK (position('@' IN email) > 0) NOT VALID;
+
+        - addForeignKeyConstraint:
+            baseTableName: applications
+            baseColumnNames: loan_type_id
+            constraintName: fk_applications_loan_type_id_loan_type
+            referencedTableName: loan_type
+            referencedColumnNames: loan_type_id
+
+        - addForeignKeyConstraint:
+            baseTableName: applications
+            baseColumnNames: application_status_id
+            constraintName: fk_applications_application_status_id_application_status
+            referencedTableName: application_status
+            referencedColumnNames: application_status_id
