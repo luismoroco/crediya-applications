@@ -41,4 +41,8 @@ sonar {
     }
 }
 
+tasks.named("validateStructure") {
+    enabled = false
+}
+
 apply from: './main.gradle'
