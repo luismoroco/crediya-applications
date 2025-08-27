@@ -4,6 +4,8 @@ import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
+import com.crediya.applications.usecase.application.gateway.AuthGateway;
+import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.transaction.Transaction;
 
 import lombok.RequiredArgsConstructor;
@@ -14,17 +16,27 @@ public class ApplicationUseCase {
 
   private final ApplicationRepository repository;
   private final Transaction transaction;
+  private final AuthGateway authGateway;
 
   public Mono<Application> startApplication(StartApplicationDTO dto) {
-    Application application = new Application();
-    application.setAmount(dto.getAmount());
-    application.setDeadline(dto.getDeadline());
-    application.setEmail(dto.getEmail());
-    application.setApplicationStatus(ApplicationStatus.PENDING);
-    application.setLoanType(dto.getLoanType());
+    return transaction.init(
+      authGateway.userExistsByEmail(dto.getEmail())
+        .flatMap(exists -> {
+          if (!exists) {
+            return Mono.error(
+              new NotFoundException(String.format("User with email %s not found.", dto.getEmail()))
+            );
+          }
 
-    return this.transaction.init(
-      this.repository.save(application)
+          Application application = new Application();
+          application.setAmount(dto.getAmount());
+          application.setDeadline(dto.getDeadline());
+          application.setEmail(dto.getEmail());
+          application.setApplicationStatus(ApplicationStatus.PENDING);
+          application.setLoanType(dto.getLoanType());
+
+          return repository.save(application);
+        })
     );
   }
 }
