@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,11 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
+@RequiredArgsConstructor
 public class RouterRest {
+
+  private final Handler handler;
+  private final GlobalExceptionFilter filter;
 
     @RouterOperations({
       @RouterOperation(
@@ -62,7 +67,7 @@ public class RouterRest {
       )
     })
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalExceptionFilter filter) {
+    public RouterFunction<ServerResponse> routerFunction() {
         return route(POST("/api/v1/applications"), handler::listenPOSTStartApplication)
           .filter(filter);
     }
