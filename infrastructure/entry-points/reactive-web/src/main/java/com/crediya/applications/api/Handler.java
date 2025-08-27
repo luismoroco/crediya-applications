@@ -7,6 +7,7 @@ import com.crediya.common.validation.ObjectValidator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -23,6 +24,10 @@ public class Handler {
           .flatMap(ObjectValidator.get()::validate)
           .map(Mappable::map)
           .flatMap(this.useCase::startApplication)
-          .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED).bodyValue(dto));
+          .flatMap(dto -> ServerResponse
+            .status(HttpStatus.CREATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(dto)
+          );
     }
 }
