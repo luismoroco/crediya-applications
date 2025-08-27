@@ -1,9 +1,7 @@
 package com.crediya.applications.api;
 
-import com.crediya.applications.api.dto.StartApplicationServerRequest;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
-import com.crediya.common.mapping.Mappable;
-import com.crediya.common.validation.ObjectValidator;
+import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,9 +18,7 @@ public class Handler {
     private final ApplicationUseCase useCase;
 
     public Mono<ServerResponse> listenPOSTStartApplication(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(StartApplicationServerRequest.class)
-          .flatMap(ObjectValidator.get()::validate)
-          .map(Mappable::map)
+        return serverRequest.bodyToMono(StartApplicationDTO.class)
           .flatMap(this.useCase::startApplication)
           .flatMap(dto -> ServerResponse
             .status(HttpStatus.CREATED)

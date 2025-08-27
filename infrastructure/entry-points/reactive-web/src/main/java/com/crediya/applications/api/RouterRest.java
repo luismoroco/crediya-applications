@@ -1,6 +1,6 @@
 package com.crediya.applications.api;
 
-import com.crediya.applications.api.dto.StartApplicationServerRequest;
+import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +37,7 @@ public class RouterRest {
             required = true,
             content = @Content(
               mediaType = "application/json",
-              schema = @Schema(implementation = StartApplicationServerRequest.class),
+              schema = @Schema(implementation = StartApplicationDTO.class),
               examples = {
                 @ExampleObject(
                   name = "Example",
