@@ -18,12 +18,12 @@ public class ReactiveTransaction implements Transaction {
   }
 
   @Override
-  public <TObject> Mono<TObject> init(Mono<TObject> mono) {
+  public <T> Mono<T> init(Mono<T> mono) {
     return mono.as(transactionalOperator::transactional);
   }
 
   @Override
-  public <TObject> Flux<TObject> init(Flux<TObject> flux) {
+  public <T> Flux<T> init(Flux<T> flux) {
     return flux.as(transactionalOperator::transactional);
   }
 }

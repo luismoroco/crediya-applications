@@ -22,7 +22,7 @@ public class ApplicationUseCase {
     return transaction.init(
       authGateway.userExistsByEmail(dto.getEmail())
         .flatMap(exists -> {
-          if (!exists) {
+          if (Boolean.FALSE.equals(exists)) {
             return Mono.error(
               new NotFoundException(String.format("User with email %s not found.", dto.getEmail()))
             );
