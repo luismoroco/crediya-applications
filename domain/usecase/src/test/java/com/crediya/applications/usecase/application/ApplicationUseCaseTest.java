@@ -7,6 +7,7 @@ import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.applications.usecase.application.gateway.AuthGateway;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
+import com.crediya.common.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,6 +26,9 @@ class ApplicationUseCaseTest {
 
   @Mock
   private AuthGateway authGateway;
+
+  @Mock
+  private Logger logger;
 
   @InjectMocks
   private ApplicationUseCase useCase;
