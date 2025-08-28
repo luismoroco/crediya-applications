@@ -19,7 +19,7 @@ public class ApplicationUseCase {
   private final AuthGateway authGateway;
 
   public Mono<Application> startApplication(StartApplicationDTO dto) {
-    return transaction.init(
+    return transaction.init( // quitar esto
       authGateway.userExistsByEmail(dto.getEmail())
         .flatMap(exists -> {
           if (Boolean.FALSE.equals(exists)) {
