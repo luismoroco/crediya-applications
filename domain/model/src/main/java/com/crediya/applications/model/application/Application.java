@@ -36,4 +36,18 @@ public class Application {
     this.loanTypeId = loanType.getCode();
   }
 
+  @Getter
+  public enum Field {
+    AMOUNT("Amount"),
+    DEADLINE("Deadline"),
+    EMAIL("Email"),
+    APPLICATION_STATUS("Application Status"),
+    LOAN_TYPE("Loan Type");
+
+    private final String label;
+
+    Field(String label) {
+      this.label = label;
+    }
+  }
 }

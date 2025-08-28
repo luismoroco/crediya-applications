@@ -8,6 +8,7 @@ import com.crediya.applications.usecase.application.gateway.AuthGateway;
 import com.crediya.common.ErrorCode;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.validation.ValidatorUtils;
+import static com.crediya.applications.model.application.Application.Field.*;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -24,7 +25,7 @@ public class ApplicationUseCase {
       .flatMap(exists -> {
         if (Boolean.FALSE.equals(exists)) {
           return Mono.error(
-            new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get("EMAIL", dto.getEmail()))
+            new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get(EMAIL.getLabel(), dto.getEmail()))
           );
         }
 
@@ -40,9 +41,9 @@ public class ApplicationUseCase {
   }
 
   public Mono<Void> validateStartApplication(StartApplicationDTO dto) {
-    return ValidatorUtils.nonNull("AMOUNT", dto.getAmount())
-      .then(ValidatorUtils.nonNull("DEADLINE", dto.getDeadline()))
-      .then(ValidatorUtils.email("EMAIL", dto.getEmail()))
-      .then(ValidatorUtils.nonNull("LOAN TYPE", dto.getLoanType()));
+    return ValidatorUtils.nonNull(AMOUNT.getLabel(), dto.getAmount())
+      .then(ValidatorUtils.nonNull(DEADLINE.getLabel(), dto.getDeadline()))
+      .then(ValidatorUtils.email(EMAIL.getLabel(), dto.getEmail()))
+      .then(ValidatorUtils.nonNull(LOAN_TYPE.getLabel(), dto.getLoanType()));
   }
 }
