@@ -40,7 +40,7 @@ public class ApplicationUseCase {
       });
   }
 
-  public Mono<Void> validateStartApplication(StartApplicationDTO dto) {
+  public static Mono<Void> validateStartApplication(StartApplicationDTO dto) {
     return ValidatorUtils.nonNull(AMOUNT.getLabel(), dto.getAmount())
       .then(ValidatorUtils.nonNull(DEADLINE.getLabel(), dto.getDeadline()))
       .then(ValidatorUtils.email(EMAIL.getLabel(), dto.getEmail()))
