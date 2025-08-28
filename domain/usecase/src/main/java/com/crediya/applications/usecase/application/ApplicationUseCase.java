@@ -5,8 +5,9 @@ import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.applications.usecase.application.gateway.AuthGateway;
+import com.crediya.common.ErrorCode;
 import com.crediya.common.exc.NotFoundException;
-import com.crediya.common.transaction.Transaction;
+import com.crediya.common.validation.ValidatorUtils;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -15,28 +16,33 @@ import reactor.core.publisher.Mono;
 public class ApplicationUseCase {
 
   private final ApplicationRepository repository;
-  private final Transaction transaction;
   private final AuthGateway authGateway;
 
   public Mono<Application> startApplication(StartApplicationDTO dto) {
-    return transaction.init( // quitar esto
-      authGateway.userExistsByEmail(dto.getEmail())
-        .flatMap(exists -> {
-          if (Boolean.FALSE.equals(exists)) {
-            return Mono.error(
-              new NotFoundException(String.format("User with email %s not found.", dto.getEmail()))
-            );
-          }
+    return validateStartApplication(dto)
+      .then(this.authGateway.userExistsByEmail(dto.getEmail()))
+      .flatMap(exists -> {
+        if (Boolean.FALSE.equals(exists)) {
+          return Mono.error(
+            new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get("EMAIL", dto.getEmail()))
+          );
+        }
 
-          Application application = new Application();
-          application.setAmount(dto.getAmount());
-          application.setDeadline(dto.getDeadline());
-          application.setEmail(dto.getEmail());
-          application.setApplicationStatus(ApplicationStatus.PENDING);
-          application.setLoanType(dto.getLoanType());
+        Application application = new Application();
+        application.setAmount(dto.getAmount());
+        application.setDeadline(dto.getDeadline());
+        application.setEmail(dto.getEmail());
+        application.setApplicationStatus(ApplicationStatus.PENDING);
+        application.setLoanType(dto.getLoanType());
 
-          return repository.save(application);
-        })
-    );
+        return repository.save(application);
+      });
+  }
+
+  public Mono<Void> validateStartApplication(StartApplicationDTO dto) {
+    return ValidatorUtils.nonNull("AMOUNT", dto.getAmount())
+      .then(ValidatorUtils.nonNull("DEADLINE", dto.getDeadline()))
+      .then(ValidatorUtils.email("EMAIL", dto.getEmail()))
+      .then(ValidatorUtils.nonNull("LOAN TYPE", dto.getLoanType()));
   }
 }
