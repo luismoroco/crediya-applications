@@ -80,7 +80,7 @@ class RouterRestTest {
       webTestClient.post()
         .uri("/api/v1/applications")
         .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(createStartApplicationDTO())
+        .bodyValue(createInvalidStartApplicationDTO())
         .exchange()
         .expectStatus().is4xxClientError();
     }
