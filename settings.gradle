@@ -33,3 +33,5 @@ include ':reactive-web'
 project(':reactive-web').projectDir = file('./infrastructure/entry-points/reactive-web')
 include ':rest-consumer'
 project(':rest-consumer').projectDir = file('./infrastructure/driven-adapters/rest-consumer')
+include ':logger'
+project(':logger').projectDir = file('./infrastructure/helpers/logger')

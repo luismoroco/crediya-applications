@@ -28,4 +28,10 @@ public class StartApplicationDTO {
     this.loanType = loanType;
     this.identityCardNumber = identityCardNumber;
   }
+
+  @Override
+  public String toString() {
+    return String.format("[amount=%s][deadline=%s][email=%s][loanType=%s][identityCardNumber=%s]", amount, deadline,
+      email, loanType, identityCardNumber);
+  }
 }
