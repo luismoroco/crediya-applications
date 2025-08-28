@@ -21,7 +21,6 @@ class RestConsumerTest {
 
     private static MockWebServer mockBackEnd;
 
-
     @BeforeAll
     static void setUp() throws IOException {
         mockBackEnd = new MockWebServer();
