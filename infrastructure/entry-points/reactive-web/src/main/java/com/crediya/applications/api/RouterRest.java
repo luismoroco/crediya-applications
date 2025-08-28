@@ -68,7 +68,7 @@ public class RouterRest {
     })
     @Bean
     public RouterFunction<ServerResponse> routerFunction() {
-        return route(POST("/api/v1/applications"), handler::listenPOSTStartApplication)
+        return route(POST("/api/v1/applications"), handler::startApplication)
           .filter(filter);
     }
 }

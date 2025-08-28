@@ -17,7 +17,7 @@ public class Handler {
 
     private final ApplicationUseCase useCase;
 
-    public Mono<ServerResponse> listenPOSTStartApplication(ServerRequest serverRequest) {
+    public Mono<ServerResponse> startApplication(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(StartApplicationDTO.class)
           .flatMap(this.useCase::startApplication)
           .flatMap(dto -> ServerResponse
