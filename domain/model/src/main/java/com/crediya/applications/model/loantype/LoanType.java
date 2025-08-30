@@ -1,12 +1,14 @@
 package com.crediya.applications.model.loantype;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class LoanType {
 
   private Long loanTypeId;
@@ -16,17 +18,18 @@ public class LoanType {
   private BigDecimal interestRate;
   private Boolean automaticValidation;
 
-  public LoanType() {
-  }
+  public enum Field {
 
-  public LoanType(String name, Long loanTypeId, Long maximumAmount, Long minimumAmount, BigDecimal interestRate,
-                  Boolean automaticValidation) {
-    this.name = name;
-    this.loanTypeId = loanTypeId;
-    this.maximumAmount = maximumAmount;
-    this.minimumAmount = minimumAmount;
-    this.interestRate = interestRate;
-    this.automaticValidation = automaticValidation;
-  }
+    LOAN_TYPE_ID,
+    NAME,
+    MAXIMUM_AMOUNT,
+    MINIMUM_AMOUNT,
+    INTEREST_RATE,
+    AUTOMATIC_VALIDATION,;
 
+    @Override
+    public String toString() {
+      return this.name().replaceAll("_", " ");
+    }
+  }
 }
