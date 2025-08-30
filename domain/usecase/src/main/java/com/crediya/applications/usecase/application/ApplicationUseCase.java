@@ -26,9 +26,9 @@ public class ApplicationUseCase {
       .then(this.authGateway.userExistsByEmail(dto.getEmail()))
       .flatMap(exists -> {
         if (Boolean.FALSE.equals(exists)) {
-          this.logger.error(ENTITY_NOT_FOUND.get(EMAIL.getLabel(), dto.getEmail()));
+          this.logger.error(ENTITY_NOT_FOUND.of(EMAIL, dto.getEmail()));
           return Mono.error(
-            new NotFoundException(ENTITY_NOT_FOUND.get(EMAIL.getLabel(), dto.getEmail()))
+            new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, dto.getEmail()))
           );
         }
 
@@ -40,15 +40,15 @@ public class ApplicationUseCase {
         application.setLoanType(dto.getLoanType());
 
         return repository.save(application)
-          .doOnSuccess(model -> this.logger.info(SUCCESSFUL_PROCESSING.get("startApplication", model.getApplicationId())))
-          .doOnError(error -> this.logger.error(ERROR_PROCESSING.get("startApplication", application.getEmail()), error));
+          .doOnSuccess(model -> this.logger.info(SUCCESSFUL_PROCESSING.of("startApplication", model.getApplicationId())))
+          .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("startApplication", application.getEmail()), error));
       });
   }
 
   public static Mono<Void> validateStartApplication(StartApplicationDTO dto) {
-    return ValidatorUtils.nonNull(AMOUNT.getLabel(), dto.getAmount())
-      .then(ValidatorUtils.nonNull(DEADLINE.getLabel(), dto.getDeadline()))
-      .then(ValidatorUtils.email(EMAIL.getLabel(), dto.getEmail()))
-      .then(ValidatorUtils.nonNull(LOAN_TYPE.getLabel(), dto.getLoanType()));
+    return ValidatorUtils.nonNull(AMOUNT, dto.getAmount())
+      .then(ValidatorUtils.nonNull(DEADLINE, dto.getDeadline()))
+      .then(ValidatorUtils.email(EMAIL, dto.getEmail()))
+      .then(ValidatorUtils.nonNull(LOAN_TYPE, dto.getLoanType()));
   }
 }

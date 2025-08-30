@@ -55,10 +55,10 @@ class ApplicationTest {
 
   @Test
   void testFieldEnumLabels() {
-    assertThat(Application.Field.AMOUNT.getLabel()).isEqualTo("Amount");
-    assertThat(Application.Field.DEADLINE.getLabel()).isEqualTo("Deadline");
-    assertThat(Application.Field.EMAIL.getLabel()).isEqualTo("Email");
-    assertThat(Application.Field.APPLICATION_STATUS.getLabel()).isEqualTo("Application Status");
-    assertThat(Application.Field.LOAN_TYPE.getLabel()).isEqualTo("Loan Type");
+    assertThat(Application.Field.AMOUNT.toString()).isEqualTo("AMOUNT");
+    assertThat(Application.Field.DEADLINE.toString()).isEqualTo("DEADLINE");
+    assertThat(Application.Field.EMAIL.toString()).isEqualTo("EMAIL");
+    assertThat(Application.Field.APPLICATION_STATUS.toString()).isEqualTo("APPLICATION STATUS");
+    assertThat(Application.Field.LOAN_TYPE.toString()).isEqualTo("LOAN TYPE");
   }
 }
