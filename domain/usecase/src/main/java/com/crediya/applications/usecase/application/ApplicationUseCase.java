@@ -40,7 +40,6 @@ public class ApplicationUseCase {
         application.setLoanType(dto.getLoanType());
 
         return repository.save(application)
-          .doOnSuccess(model -> this.logger.info(SUCCESSFUL_PROCESSING.of("startApplication", model.getApplicationId())))
           .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("startApplication", application.getEmail()), error));
       });
   }

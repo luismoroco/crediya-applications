@@ -2,6 +2,7 @@ package com.crediya.applications.api;
 
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
+import com.crediya.common.logging.aspect.AutomaticLogging;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class Handler {
 
     private final ApplicationUseCase useCase;
 
+    @AutomaticLogging
     public Mono<ServerResponse> startApplication(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(StartApplicationDTO.class)
           .flatMap(this.useCase::startApplication)
