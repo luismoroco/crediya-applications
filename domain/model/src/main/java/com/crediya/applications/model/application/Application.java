@@ -1,6 +1,5 @@
 package com.crediya.applications.model.application;
 
-import com.crediya.applications.model.loantype.LoanTypeEnum;
 import lombok.*;
 
 @Getter
@@ -15,14 +14,10 @@ public class Application {
   private Integer deadline;
   private String email;
   private Integer applicationStatusId;
-  private Integer loanTypeId;
+  private Long loanTypeId;
 
   public void setApplicationStatus(ApplicationStatus applicationStatus) {
     this.applicationStatusId = applicationStatus.getCode();
-  }
-
-  public void setLoanType(LoanTypeEnum loanType) {
-    this.loanTypeId = loanType.getCode();
   }
 
   public enum Field {
@@ -31,7 +26,7 @@ public class Application {
     DEADLINE,
     EMAIL,
     APPLICATION_STATUS,
-    LOAN_TYPE;
+    LOAN_TYPE_ID;
 
     @Override
     public String toString() {

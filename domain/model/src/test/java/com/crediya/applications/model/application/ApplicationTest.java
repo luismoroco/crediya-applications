@@ -59,6 +59,6 @@ class ApplicationTest {
     assertThat(Application.Field.DEADLINE.toString()).isEqualTo("DEADLINE");
     assertThat(Application.Field.EMAIL.toString()).isEqualTo("EMAIL");
     assertThat(Application.Field.APPLICATION_STATUS.toString()).isEqualTo("APPLICATION STATUS");
-    assertThat(Application.Field.LOAN_TYPE.toString()).isEqualTo("LOAN TYPE");
+    assertThat(Application.Field.LOAN_TYPE_ID.toString()).isEqualTo("LOAN TYPE");
   }
 }

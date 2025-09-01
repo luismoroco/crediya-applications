@@ -4,7 +4,6 @@ import com.crediya.applications.usecase.application.gateway.AuthGateway;
 
 import com.crediya.common.LogCatalog;
 import com.crediya.common.exc.NotFoundException;
-import com.crediya.common.exc.UnavailableExternalServiceException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -29,7 +28,6 @@ public class RestAuthGateway implements AuthGateway {
           : Mono.error(new NotFoundException(LogCatalog.ENTITY_NOT_FOUND.of("identity_card_number",
           identityCardNumber))
         )
-      )
-      .onErrorResume(e -> Mono.error(new UnavailableExternalServiceException(e.getMessage())));
+      );
   }
 }
