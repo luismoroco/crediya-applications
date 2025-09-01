@@ -13,25 +13,23 @@ public class StartApplicationDTO {
 
   private Long amount;
   private Integer deadline;
-  private String email;
   private LoanTypeEnum loanType;
   private String identityCardNumber;
 
   public StartApplicationDTO() {
   }
 
-  public StartApplicationDTO(Long amount, Integer deadline, String email, LoanTypeEnum loanType,
+  public StartApplicationDTO(Long amount, Integer deadline, LoanTypeEnum loanType,
                              String identityCardNumber) {
     this.amount = amount;
     this.deadline = deadline;
-    this.email = email;
     this.loanType = loanType;
     this.identityCardNumber = identityCardNumber;
   }
 
   @Override
   public String toString() {
-    return String.format("[amount=%s][deadline=%s][email=%s][loanType=%s][identityCardNumber=%s]", amount, deadline,
-      email, loanType, identityCardNumber);
+    return String.format("[amount=%s][deadline=%s][loanType=%s][identityCardNumber=%s]", amount, deadline, loanType,
+      identityCardNumber);
   }
 }

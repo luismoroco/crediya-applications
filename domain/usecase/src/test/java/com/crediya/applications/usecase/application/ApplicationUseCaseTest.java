@@ -53,14 +53,14 @@ class ApplicationUseCaseTest {
     Application app = new Application();
     app.setEmail(dto.getEmail());
 
-    when(authGateway.userExistsByEmail(dto.getEmail())).thenReturn(Mono.just(true));
+    when(authGateway.getUserByIdentityCardNumber(dto.getEmail())).thenReturn(Mono.just(true));
     when(repository.save(any(Application.class))).thenReturn(Mono.just(app));
 
     StepVerifier.create(useCase.startApplication(dto))
       .expectNextMatches(result -> result.getEmail().equals(dto.getEmail()))
       .verifyComplete();
 
-    verify(authGateway).userExistsByEmail(dto.getEmail());
+    verify(authGateway).getUserByIdentityCardNumber(dto.getEmail());
     verify(repository).save(any(Application.class));
   }
 
@@ -68,13 +68,13 @@ class ApplicationUseCaseTest {
   void testStartApplicationUserDoesNotExist() {
     StartApplicationDTO dto = createDTO();
 
-    when(authGateway.userExistsByEmail(dto.getEmail())).thenReturn(Mono.just(false));
+    when(authGateway.getUserByIdentityCardNumber(dto.getEmail())).thenReturn(Mono.just(false));
 
     StepVerifier.create(useCase.startApplication(dto))
       .expectError(NotFoundException.class)
       .verify();
 
-    verify(authGateway).userExistsByEmail(dto.getEmail());
+    verify(authGateway).getUserByIdentityCardNumber(dto.getEmail());
     verify(repository, never()).save(any(Application.class));
   }
 

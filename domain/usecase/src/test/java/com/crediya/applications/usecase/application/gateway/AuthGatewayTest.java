@@ -18,26 +18,26 @@ class AuthGatewayTest {
   }
 
   @Test
-  void testUserExistsByEmailReturnsTrue() {
+  void testGetUserByIdentityCardNumberReturnsTrue() {
     String email = "test@example.com";
-    when(authGateway.userExistsByEmail(email)).thenReturn(Mono.just(true));
+    when(authGateway.getUserByIdentityCardNumber(email)).thenReturn(Mono.just(true));
 
-    StepVerifier.create(authGateway.userExistsByEmail(email))
+    StepVerifier.create(authGateway.getUserByIdentityCardNumber(email))
       .expectNext(true)
       .verifyComplete();
 
-    verify(authGateway, times(1)).userExistsByEmail(email);
+    verify(authGateway, times(1)).getUserByIdentityCardNumber(email);
   }
 
   @Test
-  void testUserExistsByEmailReturnsFalse() {
+  void testGetUserByIdentityCardNumberReturnsFalse() {
     String email = "notfound@example.com";
-    when(authGateway.userExistsByEmail(email)).thenReturn(Mono.just(false));
+    when(authGateway.getUserByIdentityCardNumber(email)).thenReturn(Mono.just(false));
 
-    StepVerifier.create(authGateway.userExistsByEmail(email))
+    StepVerifier.create(authGateway.getUserByIdentityCardNumber(email))
       .expectNext(false)
       .verifyComplete();
 
-    verify(authGateway, times(1)).userExistsByEmail(email);
+    verify(authGateway, times(1)).getUserByIdentityCardNumber(email);
   }
 }
