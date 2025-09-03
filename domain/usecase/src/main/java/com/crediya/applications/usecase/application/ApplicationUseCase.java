@@ -34,11 +34,11 @@ public class ApplicationUseCase {
         AMOUNT, dto.getAmount(), loanType.getMinimumAmount(), loanType.getMaximumAmount())
       )
       .then(this.authGateway.getUserByIdentityCardNumber(dto.getIdentityCardNumber()))
-      .flatMap(email -> {
+      .flatMap(userDTO -> {
         Application application = new Application();
         application.setAmount(dto.getAmount());
         application.setDeadline(dto.getDeadline());
-        application.setEmail(email);
+        application.setEmail(userDTO.getEmail());
         application.setApplicationStatus(ApplicationStatus.PENDING);
         application.setLoanTypeId(dto.getLoanTypeId());
 
