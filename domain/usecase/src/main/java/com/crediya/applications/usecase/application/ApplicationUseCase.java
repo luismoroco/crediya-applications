@@ -60,12 +60,13 @@ public class ApplicationUseCase {
   public Flux<AggregatedApplication> getAggregatedApplications(GetApplicationsDTO dto) {
     return validateGetApplicationsDTOConstraints(dto)
       .thenMany(this.repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize()))
-      .switchIfEmpty(Flux.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.of("AggregatedApplications", dto));
-        return Flux.empty();
-      }))
       .collectList()
       .flatMapMany(dtos -> {
+        if (dtos.isEmpty()) {
+          this.logger.warn(ENTITY_NOT_FOUND.of("AggregatedApplications", dto));
+          return Flux.empty();
+        }
+
         List<String> userEmails = dtos.stream().map(AggregatedApplication::getEmail).toList();
 
         return this.authGateway.getUsers(userEmails)

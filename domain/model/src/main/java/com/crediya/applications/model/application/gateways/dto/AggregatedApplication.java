@@ -1,5 +1,6 @@
 package com.crediya.applications.model.application.gateways.dto;
 
+import com.crediya.applications.model.application.ApplicationStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -27,5 +28,9 @@ public class AggregatedApplication {
     this.setBasicWaging(userDTO.getBasicWaging());
 
     return this;
+  }
+
+  public ApplicationStatus getApplicationStatus() {
+    return ApplicationStatus.fromCode(this.applicationStatusId);
   }
 }

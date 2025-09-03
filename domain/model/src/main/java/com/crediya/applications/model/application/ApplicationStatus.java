@@ -13,4 +13,14 @@ public enum ApplicationStatus {
   ApplicationStatus(int code) {
     this.code = code;
   }
+
+  public static ApplicationStatus fromCode(int code) {
+    for (ApplicationStatus status : values()) {
+      if (status.code == code) {
+        return status;
+      }
+    }
+
+    throw new IllegalArgumentException();
+  }
 }
