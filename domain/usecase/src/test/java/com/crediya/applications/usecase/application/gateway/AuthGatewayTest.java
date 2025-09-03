@@ -1,5 +1,6 @@
 package com.crediya.applications.usecase.application.gateway;
 
+import com.crediya.applications.model.application.gateways.AuthGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

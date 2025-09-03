@@ -4,7 +4,7 @@ import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.model.loantype.LoanTypeEnum;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
-import com.crediya.applications.usecase.application.gateway.AuthGateway;
+import com.crediya.applications.model.application.gateways.AuthGateway;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;

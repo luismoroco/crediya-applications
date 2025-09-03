@@ -1,4 +1,4 @@
-package com.crediya.applications.model.application;
+package com.crediya.applications.model.application.gateways.dto;
 
 import lombok.*;
 
@@ -21,4 +21,11 @@ public class AggregatedApplication {
   private Integer applicationStatusId;
   private Long basicWaging;
   private BigDecimal totalDebt;
+
+  public AggregatedApplication update(UserDTO userDTO) {
+    this.setName(String.format("%s %s", userDTO.getFirstName(), userDTO.getLastName()));
+    this.setBasicWaging(userDTO.getBasicWaging());
+
+    return this;
+  }
 }

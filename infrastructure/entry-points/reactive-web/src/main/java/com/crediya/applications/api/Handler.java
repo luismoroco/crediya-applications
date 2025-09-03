@@ -1,6 +1,6 @@
 package com.crediya.applications.api;
 
-import com.crediya.applications.model.application.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;

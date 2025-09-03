@@ -1,6 +1,6 @@
 package com.crediya.applications.r2dbc;
 
-import com.crediya.applications.model.application.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;

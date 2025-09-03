@@ -2,13 +2,13 @@ package com.crediya.applications.usecase.application;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
-import com.crediya.applications.model.application.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
-import com.crediya.applications.usecase.application.gateway.AuthGateway;
-import com.crediya.applications.usecase.application.gateway.dto.UserDTO;
+import com.crediya.applications.model.application.gateways.AuthGateway;
+import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.logging.Logger;
 import com.crediya.common.validation.ValidatorUtils;
@@ -75,8 +75,7 @@ public class ApplicationUseCase {
               UserDTO user = Optional.ofNullable(userMap.get(app.getEmail()))
                 .orElseThrow(() -> new NotFoundException(ENTITY_NOT_FOUND.of(app.getEmail())));
 
-              app.setBasicWaging(user.getBasicWaging());
-              return app;
+              return app.update(user);
             }));
       })
       .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getAggregatedApplications", dto), error));

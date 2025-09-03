@@ -1,4 +1,4 @@
-package com.crediya.applications.usecase.application.gateway.dto;
+package com.crediya.applications.model.application.gateways.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

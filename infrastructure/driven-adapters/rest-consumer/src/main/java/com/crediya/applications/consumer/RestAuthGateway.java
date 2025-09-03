@@ -1,7 +1,7 @@
 package com.crediya.applications.consumer;
 
-import com.crediya.applications.usecase.application.gateway.AuthGateway;
-import com.crediya.applications.usecase.application.gateway.dto.UserDTO;
+import com.crediya.applications.model.application.gateways.AuthGateway;
+import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.common.LogCatalog;
 import com.crediya.common.exc.NotFoundException;
 

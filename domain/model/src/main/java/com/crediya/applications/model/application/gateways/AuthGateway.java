@@ -1,6 +1,6 @@
-package com.crediya.applications.usecase.application.gateway;
+package com.crediya.applications.model.application.gateways;
 
-import com.crediya.applications.usecase.application.gateway.dto.UserDTO;
+import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

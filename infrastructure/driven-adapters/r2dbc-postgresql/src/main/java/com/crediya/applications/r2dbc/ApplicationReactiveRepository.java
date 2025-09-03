@@ -1,6 +1,6 @@
 package com.crediya.applications.r2dbc;
 
-import com.crediya.applications.model.application.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.r2dbc.entity.ApplicationEntity;
 
 import org.springframework.data.r2dbc.repository.Query;
