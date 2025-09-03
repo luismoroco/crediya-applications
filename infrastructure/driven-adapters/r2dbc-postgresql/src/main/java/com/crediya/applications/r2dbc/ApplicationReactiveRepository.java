@@ -15,11 +15,20 @@ public interface ApplicationReactiveRepository extends ReactiveCrudRepository<Ap
   ReactiveQueryByExampleExecutor<ApplicationEntity> {
 
   @Query("""
-    SELECT application_id, amount, email
-    FROM applications
-    WHERE 
-        application_status_id IN (:application_status_ids)
-    LIMIT :pageSize OFFSET :offset""")
+    SELECT 
+        a.application_id        AS application_id,
+        a.amount                AS amount,
+        a.email                 AS email,
+        a.deadline              AS deadline,
+        a.application_status_id AS application_status_id,
+        a.loan_type_id          AS loan_type_id,
+        lt.interest_rate        AS interest_rate
+    FROM applications a
+    LEFT JOIN loan_type lt 
+        ON a.loan_type_id = lt.loan_type_id
+    WHERE a.application_status_id IN (:application_status_ids)
+    LIMIT :pageSize OFFSET :offset
+    """)
   Flux<AggregatedApplication> findAggregatedApplications(
     @Param("application_status_ids") List<Integer> applicationStatusIds,
     @Param("pageSize") int pageSize,

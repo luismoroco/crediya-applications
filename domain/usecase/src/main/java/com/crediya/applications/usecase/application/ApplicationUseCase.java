@@ -73,7 +73,7 @@ public class ApplicationUseCase {
           .flatMapMany(userMap -> Flux.fromIterable(dtos)
             .map(app -> {
               UserDTO user = Optional.ofNullable(userMap.get(app.getEmail()))
-                .orElseThrow(() -> new NotFoundException(ENTITY_NOT_FOUND.of(app.getEmail())));
+                .orElseThrow(() -> new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, app.getEmail())));
 
               return app.update(user);
             }));
