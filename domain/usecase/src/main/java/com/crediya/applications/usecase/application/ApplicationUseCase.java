@@ -64,7 +64,7 @@ public class ApplicationUseCase {
   }
 
   public static Mono<Void> validateGetApplicationsDTOConstraints(GetApplicationsDTO dto) {
-    return ValidatorUtils.nonNull("APPLICATION STATUSES", dto.getApplicationStatuses())
+    return ValidatorUtils.enumsValueOf("APPLICATION_STATUSES", dto.getApplicationStatuses(), ApplicationStatus.class) // TODO: this does not work
       .then(ValidatorUtils.greaterOrEqualThan("PAGE", dto.getPage(), MINIMUM_PAGE))
       .then(ValidatorUtils.greaterOrEqualThan("PAGE_SIZE", dto.getPageSize(), MINIMUM_PAGE_SIZE));
   }

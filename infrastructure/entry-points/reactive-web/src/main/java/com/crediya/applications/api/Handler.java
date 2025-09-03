@@ -1,7 +1,6 @@
 package com.crediya.applications.api;
 
 import com.crediya.applications.model.application.AggregatedApplication;
-import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
@@ -39,11 +38,13 @@ public class Handler {
     public Mono<ServerResponse> getApplications(ServerRequest serverRequest) {
         int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
         int size = Integer.parseInt(serverRequest.queryParam("size").orElse("3"));
+        List<String> applicationStatuses = serverRequest.queryParams()
+          .getOrDefault("application_statuses", List.of("PENDING"));
 
         GetApplicationsDTO request = GetApplicationsDTO.builder()
           .page(page)
           .pageSize(size)
-          .applicationStatuses(List.of(ApplicationStatus.PENDING))
+          .applicationStatuses(applicationStatuses)
           .build();
 
         return this.useCase.getAggregatedApplications(request)

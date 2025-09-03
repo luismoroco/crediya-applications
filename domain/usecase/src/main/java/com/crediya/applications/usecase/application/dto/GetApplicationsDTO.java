@@ -14,7 +14,7 @@ public class GetApplicationsDTO {
 
   private Integer page;
   private Integer pageSize;
-  private List<ApplicationStatus> applicationStatuses;
+  private List<String> applicationStatuses;
 
   @Override
   public String toString() {
