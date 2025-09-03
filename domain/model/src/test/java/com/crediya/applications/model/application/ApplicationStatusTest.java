@@ -9,7 +9,7 @@ class ApplicationStatusTest {
 
   @Test
   void testEnumValues() {
-    ApplicationStatus active = ApplicationStatus.ACTIVE;
+    ApplicationStatus active = ApplicationStatus.REJECTED;
     ApplicationStatus pending = ApplicationStatus.PENDING;
 
     assertNotNull(active);
@@ -27,7 +27,7 @@ class ApplicationStatusTest {
 
   @Test
   void testValueOf() {
-    assertEquals(ApplicationStatus.ACTIVE, ApplicationStatus.valueOf("ACTIVE"));
+    assertEquals(ApplicationStatus.REJECTED, ApplicationStatus.valueOf("ACTIVE"));
     assertEquals(ApplicationStatus.PENDING, ApplicationStatus.valueOf("PENDING"));
   }
 }

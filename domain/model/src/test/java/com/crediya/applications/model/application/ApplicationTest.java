@@ -40,9 +40,9 @@ class ApplicationTest {
   @Test
   void testSetApplicationStatus() {
     Application app = new Application();
-    app.setApplicationStatus(ApplicationStatus.ACTIVE);
+    app.setApplicationStatus(ApplicationStatus.REJECTED);
 
-    assertThat(app.getApplicationStatusId()).isEqualTo(ApplicationStatus.ACTIVE.getCode());
+    assertThat(app.getApplicationStatusId()).isEqualTo(ApplicationStatus.REJECTED.getCode());
   }
 
   @Test

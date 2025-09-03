@@ -5,8 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ApplicationStatus {
 
-  ACTIVE(1),
-  PENDING(2);
+  REJECTED(1),
+  PENDING(2),
+  MANUAL_REVIEW(3);
 
   private final int code;
 

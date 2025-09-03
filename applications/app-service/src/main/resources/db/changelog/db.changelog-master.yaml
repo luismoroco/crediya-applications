@@ -44,8 +44,9 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO application_status(application_status_id, name, description)
-              VALUES (1, 'ACTIVE', 'Active'),
-                     (2, 'PENDING', 'Pending');
+              VALUES (1, 'REJECTED', 'Rejected'),
+                     (2, 'PENDING', 'Pending'),
+                     (3, 'MANUAL_REVIEW', 'Manual Review'); 
 
         - createTable:
             tableName: loan_type
