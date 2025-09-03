@@ -26,7 +26,7 @@ public class ApplicationReactiveRepositoryAdapter extends ReactiveAdapterOperati
   }
 
   @Override
-  public Flux<AggregatedApplication> findAggregatedApplications(List<ApplicationStatus> applicationStatus) {
-    return repository.findAggregatedApplications(List.of(2));
+  public Flux<AggregatedApplication> findAggregatedApplications(List<ApplicationStatus> applicationStatus, Integer page, Integer pageSize) {
+    return this.repository.findAggregatedApplications(List.of(2), pageSize, (page - 1) * pageSize);
   }
 }

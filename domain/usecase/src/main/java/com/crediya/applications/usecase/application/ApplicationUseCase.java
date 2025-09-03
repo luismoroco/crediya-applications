@@ -21,8 +21,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ApplicationUseCase {
 
-  private static final int MINIMUM_PAGE = 0;
-  private static final int MINIMUM_PAGE_SIZE = 1;
+  private static final int MINIMUM_PAGE = 1;
+  private static final int MINIMUM_PAGE_SIZE = 3;
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
@@ -55,15 +55,18 @@ public class ApplicationUseCase {
 
   public Flux<AggregatedApplication> getAggregatedApplications(GetApplicationsDTO dto) {
     return validateGetApplicationsDTOConstraints(dto)
-      .thenMany(this.repository.findAggregatedApplications(dto.getApplicationStatuses()))
+      .thenMany(this.repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize()))
       .switchIfEmpty(Flux.defer(() -> {
         this.logger.warn(ENTITY_NOT_FOUND.of("AggregatedApplications", dto));
         return Flux.empty();
-      }));
+      }))
+      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getAggregatedApplications", dto), error));
   }
 
   public static Mono<Void> validateGetApplicationsDTOConstraints(GetApplicationsDTO dto) {
-    return ValidatorUtils.nonNull("APPLICATION STATUSES", dto.getApplicationStatuses());
+    return ValidatorUtils.nonNull("APPLICATION STATUSES", dto.getApplicationStatuses())
+      .then(ValidatorUtils.greaterOrEqualThan("PAGE", dto.getPage(), MINIMUM_PAGE))
+      .then(ValidatorUtils.greaterOrEqualThan("PAGE_SIZE", dto.getPageSize(), MINIMUM_PAGE_SIZE));
   }
 
   public static Mono<Void> validateStartApplicationDTOConstraints(StartApplicationDTO dto) {

@@ -1,11 +1,13 @@
 package com.crediya.applications.api;
 
+import com.crediya.applications.model.application.AggregatedApplication;
 import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.common.logging.aspect.AutomaticLogging;
 
+import com.crediya.common.pagination.Paginator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,8 +37,8 @@ public class Handler {
 
     @AutomaticLogging
     public Mono<ServerResponse> getApplications(ServerRequest serverRequest) {
-        int page = Integer.parseInt(serverRequest.queryParam("page").orElse("0"));
-        int size = Integer.parseInt(serverRequest.queryParam("size").orElse("10"));
+        int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
+        int size = Integer.parseInt(serverRequest.queryParam("size").orElse("3"));
 
         GetApplicationsDTO request = GetApplicationsDTO.builder()
           .page(page)
@@ -49,7 +51,13 @@ public class Handler {
           .flatMap(dto -> ServerResponse
             .status(HttpStatus.OK)
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(dto)
+            .bodyValue(
+              Paginator.<AggregatedApplication>builder()
+                .page(page)
+                .size(size)
+                .content(dto)
+                .build()
+            )
           );
     }
 }

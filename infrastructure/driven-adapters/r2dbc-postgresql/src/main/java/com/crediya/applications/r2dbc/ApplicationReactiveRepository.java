@@ -11,12 +11,18 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public interface ApplicationReactiveRepository extends ReactiveCrudRepository<ApplicationEntity, Long>, ReactiveQueryByExampleExecutor<ApplicationEntity> {
+public interface ApplicationReactiveRepository extends ReactiveCrudRepository<ApplicationEntity, Long>,
+  ReactiveQueryByExampleExecutor<ApplicationEntity> {
 
-  @Query("" +
-    "SELECT application_id, amount " +
-    "FROM applications " +
-    "WHERE " +
-      "application_status_id IN (:application_status_ids) ")
-  Flux<AggregatedApplication> findAggregatedApplications(@Param("application_status_ids") List<Integer> applicationStatusIds);
+  @Query("""
+    SELECT application_id, amount
+    FROM applications
+    WHERE 
+        application_status_id IN (:application_status_ids)
+    LIMIT :pageSize OFFSET :offset""")
+  Flux<AggregatedApplication> findAggregatedApplications(
+    @Param("application_status_ids") List<Integer> applicationStatusIds,
+    @Param("pageSize") int pageSize,
+    @Param("offset") int offset
+  );
 }

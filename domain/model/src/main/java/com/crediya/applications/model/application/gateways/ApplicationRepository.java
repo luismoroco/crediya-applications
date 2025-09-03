@@ -11,5 +11,5 @@ import java.util.List;
 public interface ApplicationRepository {
   Mono<Application> save(Application application);
 
-  Flux<AggregatedApplication> findAggregatedApplications(List<ApplicationStatus> applicationStatus);
+  Flux<AggregatedApplication> findAggregatedApplications(List<ApplicationStatus> applicationStatus, Integer page, Integer pageSize);
 }
