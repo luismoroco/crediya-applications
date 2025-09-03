@@ -24,7 +24,7 @@ public class ApplicationUseCase {
   private final Logger logger;
 
   public Mono<Application> startApplication(StartApplicationDTO dto) {
-    return validateStartApplication(dto)
+    return validateStartApplicationDTOConstraints(dto)
       .then(this.loanTypeRepository.findById(dto.getLoanTypeId()))
       .switchIfEmpty(Mono.defer(() -> {
         this.logger.warn(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, dto.getLoanTypeId()));
@@ -47,7 +47,7 @@ public class ApplicationUseCase {
       });
   }
 
-  public static Mono<Void> validateStartApplication(StartApplicationDTO dto) {
+  public static Mono<Void> validateStartApplicationDTOConstraints(StartApplicationDTO dto) {
     return ValidatorUtils.nonNull(AMOUNT, dto.getAmount())
       .then(ValidatorUtils.nonNull(DEADLINE, dto.getDeadline()))
       .then(ValidatorUtils.string("IDENTITY CARD NUMBER", dto.getIdentityCardNumber()))

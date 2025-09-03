@@ -83,7 +83,7 @@ class ApplicationUseCaseTest {
     StartApplicationDTO dto = new StartApplicationDTO();
     dto.setAmount(1000L);
 
-    StepVerifier.create(ApplicationUseCase.validateStartApplication(dto))
+    StepVerifier.create(ApplicationUseCase.validateStartApplicationDTOConstraints(dto))
       .expectErrorMatches(throwable -> throwable instanceof ValidationException &&
         throwable.getMessage().contains("invalid"))
       .verify();
