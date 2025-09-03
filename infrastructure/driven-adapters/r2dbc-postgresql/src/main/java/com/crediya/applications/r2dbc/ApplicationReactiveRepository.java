@@ -15,7 +15,7 @@ public interface ApplicationReactiveRepository extends ReactiveCrudRepository<Ap
   ReactiveQueryByExampleExecutor<ApplicationEntity> {
 
   @Query("""
-    SELECT application_id, amount
+    SELECT application_id, amount, email
     FROM applications
     WHERE 
         application_status_id IN (:application_status_ids)

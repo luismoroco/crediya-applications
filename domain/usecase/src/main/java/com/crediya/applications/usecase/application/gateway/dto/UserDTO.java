@@ -21,7 +21,7 @@ public class UserDTO {
   private String identityCardNumber;
   private String password;
   private String phoneNumber;
-  private Double basicWaging;
+  private Long basicWaging;
   private LocalDate birthDate;
   private String address;
   private String userRole;

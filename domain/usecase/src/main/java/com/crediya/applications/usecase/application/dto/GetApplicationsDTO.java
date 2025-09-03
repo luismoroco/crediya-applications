@@ -1,6 +1,5 @@
 package com.crediya.applications.usecase.application.dto;
 
-import com.crediya.applications.model.application.ApplicationStatus;
 import lombok.*;
 
 import java.util.List;

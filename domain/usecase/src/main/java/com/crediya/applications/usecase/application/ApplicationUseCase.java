@@ -8,6 +8,7 @@ import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.applications.usecase.application.gateway.AuthGateway;
+import com.crediya.applications.usecase.application.gateway.dto.UserDTO;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.logging.Logger;
 import com.crediya.common.validation.ValidatorUtils;
@@ -17,6 +18,9 @@ import static com.crediya.common.LogCatalog.*;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class ApplicationUseCase {
@@ -60,6 +64,21 @@ public class ApplicationUseCase {
         this.logger.warn(ENTITY_NOT_FOUND.of("AggregatedApplications", dto));
         return Flux.empty();
       }))
+      .collectList()
+      .flatMapMany(dtos -> {
+        List<String> userEmails = dtos.stream().map(AggregatedApplication::getEmail).toList();
+
+        return this.authGateway.getUsers(userEmails)
+          .collectMap(UserDTO::getEmail)
+          .flatMapMany(userMap -> Flux.fromIterable(dtos)
+            .map(app -> {
+              UserDTO user = Optional.ofNullable(userMap.get(app.getEmail()))
+                .orElseThrow(() -> new NotFoundException(ENTITY_NOT_FOUND.of(app.getEmail())));
+
+              app.setBasicWaging(user.getBasicWaging());
+              return app;
+            }));
+      })
       .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getAggregatedApplications", dto), error));
   }
 
