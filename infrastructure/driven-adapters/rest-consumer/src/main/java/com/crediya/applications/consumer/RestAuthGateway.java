@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,5 +33,18 @@ public class RestAuthGateway implements AuthGateway {
           identityCardNumber
         )))
       );
+  }
+
+  @Override
+  public Flux<UserDTO> getUsers(List<String> identityCardNumbers) {
+    return this.webClient.get()
+      .uri(uriBuilder -> uriBuilder
+        .path("/api/v1/users")
+        .queryParam("identity_card_numbers", identityCardNumbers.toArray())
+        .build()
+      )
+      .accept(MediaType.APPLICATION_JSON)
+      .retrieve()
+      .bodyToFlux(UserDTO.class);
   }
 }
