@@ -67,7 +67,7 @@ public class ApplicationUseCase {
       .collectList()
       .flatMapMany(dtos -> {
         if (dtos.isEmpty()) {
-          this.logger.warn("Entities not found {}", dto);
+          this.logger.warn("Entities not found [args={}]", dto);
           return Flux.empty();
         }
 
