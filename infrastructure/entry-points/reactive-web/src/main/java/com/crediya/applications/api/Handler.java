@@ -10,6 +10,7 @@ import com.crediya.common.pagination.Paginator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -24,6 +25,7 @@ public class Handler {
     private final ApplicationUseCase useCase;
 
     @AutomaticLogging
+    @PreAuthorize("hasRole('CUSTOMER')")
     public Mono<ServerResponse> startApplication(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(StartApplicationDTO.class)
           .flatMap(this.useCase::startApplication)
@@ -35,6 +37,7 @@ public class Handler {
     }
 
     @AutomaticLogging
+    @PreAuthorize("hasRole('ADVISOR')")
     public Mono<ServerResponse> getApplications(ServerRequest serverRequest) {
         int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
         int pageSize = Integer.parseInt(serverRequest.queryParam("page_size").orElse("3"));
