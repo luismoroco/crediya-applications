@@ -4,11 +4,15 @@ import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
@@ -35,10 +39,11 @@ public class RouterRest {
         produces = { "application/json" },
         beanClass = Handler.class,
         method = RequestMethod.POST,
-        beanMethod = "listenPOSTStartApplication",
+        beanMethod = "startApplication",
         operation = @Operation(
           operationId = "startApplication",
-          summary = "Init application",
+          summary = "Start a Loan request",
+          security = @SecurityRequirement(name = "bearerAuth"),
           requestBody = @RequestBody(
             required = true,
             content = @Content(
@@ -49,17 +54,55 @@ public class RouterRest {
                   name = "Example",
                   value = """
                                   {
-                                    "amount": 5000,
-                                    "deadline": 12,
-                                    "email": "usuario@correo.com",
-                                    "loanType": "PERSONAL_LOAN",
-                                    "identityCardNumber": "12345678"
+                                    "amount": 120000,
+                                    "deadline": 500,
+                                    "loanTypeId": 1
                                   }
                                   """
                 )
               }
             )
           ),
+          responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+          }
+        )
+      ),
+      @RouterOperation(
+        path = "/api/v1/applications",
+        produces = { "application/json" },
+        beanClass = Handler.class,
+        method = RequestMethod.GET,
+        beanMethod = "getApplications",
+        operation = @Operation(
+          operationId = "getApplications",
+          summary = "Get applications",
+          security = @SecurityRequirement(name = "bearerAuth"),
+          parameters = {
+            @Parameter(
+              name = "page",
+              in = ParameterIn.QUERY,
+              required = true,
+              description = "page",
+              schema = @Schema(type = "integer", example = "1")
+            ),
+            @Parameter(
+              name = "page_size",
+              in = ParameterIn.QUERY,
+              required = true,
+              description = "page size",
+              schema = @Schema(type = "integer", example = "3")
+            ),
+            @Parameter(
+              name = "application_statuses",
+              in = ParameterIn.QUERY,
+              required = true,
+              description = "Applications' statuses",
+              array = @ArraySchema(schema = @Schema(type = "string")),
+              example = "PENDING"
+            )
+          },
           responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request")

@@ -29,6 +29,7 @@ public class WebContextFilter implements WebFilter {
 
         return chain.filter(exchange)
           .contextWrite(Context.of("identityCardNumber", identityCardNumber));
-      });
+      })
+      .switchIfEmpty(chain.filter(exchange));
   }
 }
