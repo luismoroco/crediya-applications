@@ -1,11 +1,16 @@
 package com.crediya.applications.model.application.gateways;
 
 import com.crediya.applications.model.application.Application;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,7 +32,7 @@ class ApplicationRepositoryTest {
     application.setDeadline(12);
     application.setEmail("test@example.com");
     application.setApplicationStatusId(1);
-    application.setLoanTypeId(2);
+    application.setLoanTypeId(2L);
 
     when(applicationRepository.save(any(Application.class))).thenReturn(Mono.just(application));
 
@@ -38,10 +43,51 @@ class ApplicationRepositoryTest {
           app.getDeadline().equals(12) &&
           app.getEmail().equals("test@example.com") &&
           app.getApplicationStatusId().equals(1) &&
-          app.getLoanTypeId().equals(2)
+          app.getLoanTypeId().equals(2L)
       )
       .verifyComplete();
 
     verify(applicationRepository, times(1)).save(application);
+  }
+
+  @Test
+  void testFindAggregatedApplications() {
+    List<String> statuses = List.of("PENDING");
+    int page = 0;
+    int pageSize = 10;
+
+    AggregatedApplication app = AggregatedApplication.builder()
+      .applicationId(1L)
+      .amount(10000L)
+      .deadline(24)
+      .email("user@example.com")
+      .name("Test User")
+      .loanTypeId(3)
+      .interestRate(BigDecimal.valueOf(5.5))
+      .applicationStatusId(1)
+      .basicWaging(2000L)
+      .totalDebt(BigDecimal.valueOf(5000))
+      .build();
+
+    when(applicationRepository.findAggregatedApplications(statuses, page, pageSize))
+      .thenReturn(Flux.just(app));
+
+    StepVerifier.create(applicationRepository.findAggregatedApplications(statuses, page, pageSize))
+      .expectNextMatches(a ->
+        a.getApplicationId().equals(1L) &&
+          a.getAmount().equals(10000L) &&
+          a.getDeadline().equals(24) &&
+          a.getEmail().equals("user@example.com") &&
+          a.getName().equals("Test User") &&
+          a.getLoanTypeId().equals(3) &&
+          a.getInterestRate().equals(BigDecimal.valueOf(5.5)) &&
+          a.getApplicationStatusId().equals(1) &&
+          a.getBasicWaging().equals(2000L) &&
+          a.getTotalDebt().equals(BigDecimal.valueOf(5000))
+      )
+      .verifyComplete();
+
+    verify(applicationRepository, times(1))
+      .findAggregatedApplications(statuses, page, pageSize);
   }
 }

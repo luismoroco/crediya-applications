@@ -30,8 +30,8 @@ class LoanTypeTest {
   @Test
   void testAllArgsConstructor() {
     LoanType loanType = new LoanType(
-      "Mortgage",
       2L,
+      "Mortgage",
       500000L,
       50000L,
       BigDecimal.valueOf(0.08),

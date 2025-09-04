@@ -22,12 +22,12 @@ class ApplicationStatusTest {
   @Test
   void testValuesCount() {
     ApplicationStatus[] values = ApplicationStatus.values();
-    assertEquals(2, values.length, "Debe haber exactamente 2 estados");
+    assertEquals(3, values.length, "Only 3 status values");
   }
 
   @Test
   void testValueOf() {
-    assertEquals(ApplicationStatus.REJECTED, ApplicationStatus.valueOf("ACTIVE"));
+    assertEquals(ApplicationStatus.REJECTED, ApplicationStatus.valueOf("REJECTED"));
     assertEquals(ApplicationStatus.PENDING, ApplicationStatus.valueOf("PENDING"));
   }
 }
