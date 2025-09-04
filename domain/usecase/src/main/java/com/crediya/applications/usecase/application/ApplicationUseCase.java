@@ -57,7 +57,7 @@ public class ApplicationUseCase {
         application.setLoanTypeId(dto.getLoanTypeId());
 
         return repository.save(application)
-          .doOnError(error -> this.logger.error("Error starting application [args={}][error={}]", dto, error));
+          .doOnError(error -> this.logger.error("Error starting application [args={}][error={}]", dto, error.getMessage()));
       });
   }
 
@@ -86,7 +86,7 @@ public class ApplicationUseCase {
               return app.update(user);
             }));
       })
-      .doOnError(error -> this.logger.error("Error getting aggregated applications [args={}][error={}]", dto, error));
+      .doOnError(error -> this.logger.error("Error getting aggregated applications [args={}][error={}]", dto, error.getMessage()));
   }
 
   public static Mono<Void> validateGetApplicationsDTOConstraints(GetApplicationsDTO dto) {
