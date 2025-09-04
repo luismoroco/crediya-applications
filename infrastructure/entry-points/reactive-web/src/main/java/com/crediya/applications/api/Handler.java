@@ -28,6 +28,10 @@ public class Handler {
     @PreAuthorize("hasRole('CUSTOMER')")
     public Mono<ServerResponse> startApplication(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(StartApplicationDTO.class)
+          .flatMap(startApplicationDto -> Mono.deferContextual(context -> {
+              startApplicationDto.setIdentityCardNumber(context.get("identityCardNumber"));
+              return Mono.just(startApplicationDto);
+          }))
           .flatMap(this.useCase::startApplication)
           .flatMap(dto -> ServerResponse
             .status(HttpStatus.CREATED)
