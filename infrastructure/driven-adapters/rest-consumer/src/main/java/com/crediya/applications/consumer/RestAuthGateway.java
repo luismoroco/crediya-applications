@@ -16,14 +16,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RestAuthGateway implements AuthGateway {
+public class RestAuthGateway implements AuthGateway { // TODO: update name -> use ..adapter instead
 
   private final WebClient webClient;
 
   @Override
   public Mono<UserDTO> getUserByIdentityCardNumber(String identityCardNumber) {
     return this.webClient.get()
-      .uri("/api/v1/users/{identity_card_number}", identityCardNumber)
+      .uri("/api/v1/users/{identity_card_number}", identityCardNumber) // TODO: use env instead
       .accept(MediaType.APPLICATION_JSON)
       .exchangeToMono(response ->
         response.statusCode().is2xxSuccessful()

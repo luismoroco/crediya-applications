@@ -37,13 +37,13 @@ public class Handler {
     @AutomaticLogging
     public Mono<ServerResponse> getApplications(ServerRequest serverRequest) {
         int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
-        int size = Integer.parseInt(serverRequest.queryParam("size").orElse("3"));
+        int pageSize = Integer.parseInt(serverRequest.queryParam("page_size").orElse("3"));
         List<String> applicationStatuses = serverRequest.queryParams()
           .getOrDefault("application_statuses", List.of("PENDING"));
 
         GetApplicationsDTO request = GetApplicationsDTO.builder()
           .page(page)
-          .pageSize(size)
+          .pageSize(pageSize)
           .applicationStatuses(applicationStatuses)
           .build();
 
@@ -55,7 +55,7 @@ public class Handler {
             .bodyValue(
               Paginator.<AggregatedApplication>builder()
                 .page(page)
-                .size(size)
+                .size(pageSize)
                 .content(dto)
                 .build()
             )

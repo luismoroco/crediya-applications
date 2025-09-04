@@ -27,6 +27,10 @@ public class ApplicationUseCase {
 
   private static final int MINIMUM_PAGE = 1;
   private static final int MINIMUM_PAGE_SIZE = 3;
+  private static final String PAGE = "page";
+  private static final String PAGE_SIZE = "pageSize";
+  private static final String IDENTITY_CARD_NUMBER = "identityCardNumber";
+  private static final String APPLICATION_STATUSES = "applicationStatuses";
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
@@ -37,7 +41,7 @@ public class ApplicationUseCase {
     return validateStartApplicationDTOConstraints(dto)
       .then(this.loanTypeRepository.findById(dto.getLoanTypeId()))
       .switchIfEmpty(Mono.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, dto.getLoanTypeId()));
+        this.logger.error("Loan type not found [loanTypeId={}]", dto.getLoanTypeId());
         return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, dto.getLoanTypeId())));
       }))
       .flatMap(loanType -> ValidatorUtils.numberBetween(
@@ -53,7 +57,7 @@ public class ApplicationUseCase {
         application.setLoanTypeId(dto.getLoanTypeId());
 
         return repository.save(application)
-          .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("startApplication", application.getEmail()), error));
+          .doOnError(error -> this.logger.error("Error starting application [args={}][error={}]", dto, error));
       });
   }
 
@@ -63,7 +67,7 @@ public class ApplicationUseCase {
       .collectList()
       .flatMapMany(dtos -> {
         if (dtos.isEmpty()) {
-          this.logger.warn(ENTITY_NOT_FOUND.of("AggregatedApplications", dto));
+          this.logger.warn("Entities not found {}", dto);
           return Flux.empty();
         }
 
@@ -74,24 +78,27 @@ public class ApplicationUseCase {
           .flatMapMany(userMap -> Flux.fromIterable(dtos)
             .map(app -> {
               UserDTO user = Optional.ofNullable(userMap.get(app.getEmail()))
-                .orElseThrow(() -> new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, app.getEmail())));
+                .orElseThrow(() -> {
+                  this.logger.error("User not found [email={}]", app.getEmail());
+                  return new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, app.getEmail()));
+                });
 
               return app.update(user);
             }));
       })
-      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getAggregatedApplications", dto), error));
+      .doOnError(error -> this.logger.error("Error getting aggregated applications [args={}][error={}]", dto, error));
   }
 
   public static Mono<Void> validateGetApplicationsDTOConstraints(GetApplicationsDTO dto) {
-    return ValidatorUtils.enumsValueOf("APPLICATION_STATUSES", dto.getApplicationStatuses(), ApplicationStatus.class) // TODO: this does not work
-      .then(ValidatorUtils.greaterOrEqualThan("PAGE", dto.getPage(), MINIMUM_PAGE))
-      .then(ValidatorUtils.greaterOrEqualThan("PAGE_SIZE", dto.getPageSize(), MINIMUM_PAGE_SIZE));
+    return ValidatorUtils.enumsValueOf(APPLICATION_STATUSES, dto.getApplicationStatuses(), ApplicationStatus.class) // TODO: this does not work
+      .then(ValidatorUtils.greaterOrEqualThan(PAGE, dto.getPage(), MINIMUM_PAGE))
+      .then(ValidatorUtils.greaterOrEqualThan(PAGE_SIZE, dto.getPageSize(), MINIMUM_PAGE_SIZE));
   }
 
   public static Mono<Void> validateStartApplicationDTOConstraints(StartApplicationDTO dto) {
     return ValidatorUtils.nonNull(AMOUNT, dto.getAmount())
       .then(ValidatorUtils.nonNull(DEADLINE, dto.getDeadline()))
-      .then(ValidatorUtils.string("IDENTITY CARD NUMBER", dto.getIdentityCardNumber()))
+      .then(ValidatorUtils.string(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber()))
       .then(ValidatorUtils.nonNull(LOAN_TYPE_ID, dto.getLoanTypeId()));
   }
 }
