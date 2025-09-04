@@ -17,6 +17,6 @@ public class GetApplicationsDTO {
 
   @Override
   public String toString() {
-    return String.format("GetApplicationsDTO: page=%d, pageSize=%d", page, pageSize);
+    return String.format("[page=%s][pageSize=%s][applicationStatuses=%s]", page, pageSize, applicationStatuses);
   }
 }

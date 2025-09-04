@@ -9,11 +9,18 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "adapter.restconsumer")
 public class RestConsumerProperties {
 
-  private ServiceConfig auth;
+  private CrediyaAuthConfig crediyaAuth;
 
   @Data
-  public static class ServiceConfig {
+  public static class CrediyaAuthConfig {
     private String url;
     private int timeout;
+    private AuthPath path;
+
+    @Data
+    public static class AuthPath {
+      private String getUserByIdentityCardNumber;
+      private String getUsers;
+    }
   }
 }

@@ -2,7 +2,7 @@ package com.crediya.applications.consumer.config;
 
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -15,27 +15,22 @@ import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestConsumerConfig {
 
-    private final String url;
-    private final int timeout;
+    private final RestConsumerProperties properties;
 
-    public RestConsumerConfig(@Value("${adapter.restconsumer.url}") String url,
-                              @Value("${adapter.restconsumer.timeout}") int timeout) {
-        this.url = url;
-        this.timeout = timeout;
-    }
-
-    @Bean
-    public WebClient getWebClient(WebClient.Builder builder) {
+    @Bean("crediya-auth")
+    public WebClient authWebClient(WebClient.Builder builder) {
+        RestConsumerProperties.CrediyaAuthConfig authConfig = properties.getCrediyaAuth();
         return builder
-            .baseUrl(url)
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .clientConnector(getClientHttpConnector())
-            .build();
+          .baseUrl(authConfig.getUrl())
+          .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+          .clientConnector(this.getClientHttpConnector(authConfig.getTimeout()))
+          .build();
     }
 
-    private ClientHttpConnector getClientHttpConnector() {
+    private ClientHttpConnector getClientHttpConnector(int timeout) {
         return new ReactorClientHttpConnector(HttpClient.create()
                 .compress(true)
                 .keepAlive(true)

@@ -51,8 +51,12 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 adapter:
   restconsumer:
-    timeout: 5000
-    url: "http://localhost:8080"
+    crediya-auth:
+      url: "http://localhost:8081"
+      timeout: 5000
+      path:
+        getUserByIdentityCardNumber: "/api/v1/users/{identity_card_number}"
+        getUsers: "/api/v1/users"
 resilience4j:
   circuitbreaker:
     instances:
