@@ -25,12 +25,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApplicationUseCase {
 
-  private static final int MINIMUM_PAGE = 1;
-  private static final int MINIMUM_PAGE_SIZE = 3;
-  private static final String PAGE = "page";
-  private static final String PAGE_SIZE = "pageSize";
+  public static final int MINIMUM_PAGE = 1;
+  public static final int MINIMUM_PAGE_SIZE = 3;
+  public static final String PAGE = "page";
+  public static final String PAGE_SIZE = "page_size";
   private static final String IDENTITY_CARD_NUMBER = "identityCardNumber";
-  private static final String APPLICATION_STATUSES = "applicationStatuses";
+  public static final String APPLICATION_STATUSES = "application_statuses";
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;

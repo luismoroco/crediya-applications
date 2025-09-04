@@ -1,5 +1,6 @@
 package com.crediya.applications.api;
 
+import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
@@ -18,6 +19,13 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.crediya.applications.usecase.application.ApplicationUseCase.PAGE;
+import static com.crediya.applications.usecase.application.ApplicationUseCase.PAGE_SIZE;
+import static com.crediya.applications.usecase.application.ApplicationUseCase.MINIMUM_PAGE;
+import static com.crediya.applications.usecase.application.ApplicationUseCase.MINIMUM_PAGE_SIZE;
+import static com.crediya.applications.usecase.application.ApplicationUseCase.APPLICATION_STATUSES;
+import static com.crediya.applications.api.config.WebContextFilter.IDENTITY_CARD_NUMBER;
+
 @Component
 @RequiredArgsConstructor
 public class Handler {
@@ -29,7 +37,7 @@ public class Handler {
     public Mono<ServerResponse> startApplication(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(StartApplicationDTO.class)
           .flatMap(startApplicationDto -> Mono.deferContextual(context -> {
-              startApplicationDto.setIdentityCardNumber(context.get("identityCardNumber"));
+              startApplicationDto.setIdentityCardNumber(context.get(IDENTITY_CARD_NUMBER));
               return Mono.just(startApplicationDto);
           }))
           .flatMap(this.useCase::startApplication)
@@ -43,10 +51,10 @@ public class Handler {
     @AutomaticLogging
     @PreAuthorize("hasRole('ADVISOR')")
     public Mono<ServerResponse> getApplications(ServerRequest serverRequest) {
-        int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
-        int pageSize = Integer.parseInt(serverRequest.queryParam("page_size").orElse("3"));
+        int page = Integer.parseInt(serverRequest.queryParam(PAGE).orElse(String.valueOf(MINIMUM_PAGE)));
+        int pageSize = Integer.parseInt(serverRequest.queryParam(PAGE_SIZE).orElse(String.valueOf(MINIMUM_PAGE_SIZE)));
         List<String> applicationStatuses = serverRequest.queryParams()
-          .getOrDefault("application_statuses", List.of("PENDING"));
+          .getOrDefault(APPLICATION_STATUSES, List.of(ApplicationStatus.PENDING.name()));
 
         GetApplicationsDTO request = GetApplicationsDTO.builder()
           .page(page)

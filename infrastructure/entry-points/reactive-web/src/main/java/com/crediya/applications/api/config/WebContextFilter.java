@@ -15,20 +15,20 @@ import java.util.Objects;
 @Component
 public class WebContextFilter implements WebFilter {
 
-  private static final String IDENTITY_CARD_NUMBER = "identityCardNumber";
+  public static final String IDENTITY_CARD_NUMBER = "identityCardNumber";
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     return exchange.getPrincipal()
       .cast(JwtAuthenticationToken.class)
       .flatMap(authToken -> {
-        String identityCardNumber = authToken.getToken().getClaimAsString("identityCardNumber");
+        String identityCardNumber = authToken.getToken().getClaimAsString(IDENTITY_CARD_NUMBER);
         if (Objects.isNull(identityCardNumber)) {
           return Mono.error(new BadRequestException(ENTITY_NOT_FOUND.of(IDENTITY_CARD_NUMBER)));
         }
 
         return chain.filter(exchange)
-          .contextWrite(Context.of("identityCardNumber", identityCardNumber));
+          .contextWrite(Context.of(IDENTITY_CARD_NUMBER, identityCardNumber));
       })
       .switchIfEmpty(chain.filter(exchange));
   }

@@ -18,6 +18,9 @@ import java.util.List;
 @Service
 public class AuthClientAdapter implements AuthClient {
 
+  private static final String IDENTITY_CARD_NUMBER = "identity_card_number";
+  private static final String IDENTITY_CARD_NUMBERS = "identity_card_numbers";
+
   private final WebClient webClient;
   private final RestConsumerProperties properties;
 
@@ -35,10 +38,7 @@ public class AuthClientAdapter implements AuthClient {
       .exchangeToMono(response ->
         response.statusCode().is2xxSuccessful()
           ? response.bodyToMono(UserDTO.class)
-          : Mono.error(new NotFoundException(LogCatalog.ENTITY_NOT_FOUND.of(
-          "identity_card_number",
-          identityCardNumber
-        )))
+          : Mono.error(new NotFoundException(LogCatalog.ENTITY_NOT_FOUND.of(IDENTITY_CARD_NUMBER, identityCardNumber)))
       );
   }
 
@@ -47,7 +47,7 @@ public class AuthClientAdapter implements AuthClient {
     return this.webClient.get()
       .uri(uriBuilder -> uriBuilder
         .path(this.properties.getCrediyaAuth().getPath().getGetUsers())
-        .queryParam("identity_card_numbers", identityCardNumbers.toArray())
+        .queryParam(IDENTITY_CARD_NUMBERS, identityCardNumbers.toArray())
         .build()
       )
       .accept(MediaType.APPLICATION_JSON)
