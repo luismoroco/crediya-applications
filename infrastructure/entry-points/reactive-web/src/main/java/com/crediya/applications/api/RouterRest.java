@@ -1,5 +1,6 @@
 package com.crediya.applications.api;
 
+import com.crediya.applications.api.config.ApplicationPath;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
@@ -32,6 +33,7 @@ public class RouterRest {
 
   private final Handler handler;
   private final GlobalExceptionFilter filter;
+  private final ApplicationPath applicationPath;
 
     @RouterOperations({
       @RouterOperation(
@@ -112,8 +114,8 @@ public class RouterRest {
     })
     @Bean
     public RouterFunction<ServerResponse> routerFunction() {
-        return route(POST("/api/v1/applications"), this.handler::startApplication)
-          .andRoute(GET("/api/v1/applications"), this.handler::getApplications)
+        return route(POST(this.applicationPath.startApplication()), this.handler::startApplication)
+          .andRoute(GET(this.applicationPath.getApplications()), this.handler::getApplications)
           .filter(filter);
     }
 }

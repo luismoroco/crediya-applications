@@ -7,7 +7,7 @@ import com.crediya.applications.model.application.gateways.ApplicationRepository
 import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
-import com.crediya.applications.model.application.gateways.AuthGateway;
+import com.crediya.applications.model.application.gateways.AuthClient;
 import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.logging.Logger;
@@ -34,7 +34,7 @@ public class ApplicationUseCase {
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
-  private final AuthGateway authGateway;
+  private final AuthClient authClient;
   private final Logger logger;
 
   public Mono<Application> startApplication(StartApplicationDTO dto) {
@@ -47,7 +47,7 @@ public class ApplicationUseCase {
       .flatMap(loanType -> ValidatorUtils.numberBetween(
         AMOUNT, dto.getAmount(), loanType.getMinimumAmount(), loanType.getMaximumAmount())
       )
-      .then(this.authGateway.getUserByIdentityCardNumber(dto.getIdentityCardNumber()))
+      .then(this.authClient.getUserByIdentityCardNumber(dto.getIdentityCardNumber()))
       .flatMap(userDTO -> {
         Application application = new Application();
         application.setAmount(dto.getAmount());
@@ -73,7 +73,7 @@ public class ApplicationUseCase {
 
         List<String> userEmails = dtos.stream().map(AggregatedApplication::getEmail).toList();
 
-        return this.authGateway.getUsers(userEmails)
+        return this.authClient.getUsers(userEmails)
           .collectMap(UserDTO::getEmail)
           .flatMapMany(userMap -> Flux.fromIterable(dtos)
             .map(app -> {

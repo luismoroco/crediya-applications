@@ -1,6 +1,6 @@
 package com.crediya.applications.consumer;
 
-import com.crediya.applications.model.application.gateways.AuthGateway;
+import com.crediya.applications.model.application.gateways.AuthClient;
 import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.common.LogCatalog;
 import com.crediya.common.exc.NotFoundException;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RestAuthGateway implements AuthGateway { // TODO: update name -> use ..adapter instead
+public class AuthClientAdapter implements AuthClient {
 
   private final WebClient webClient;
 

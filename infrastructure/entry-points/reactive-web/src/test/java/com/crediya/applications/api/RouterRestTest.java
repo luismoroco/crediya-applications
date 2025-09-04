@@ -1,5 +1,6 @@
 package com.crediya.applications.api;
 
+import com.crediya.applications.api.config.ApplicationPath;
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.loantype.LoanTypeEnum;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
@@ -21,6 +22,7 @@ class RouterRestTest {
 
     private ApplicationUseCase useCase;
     private WebTestClient webTestClient;
+    private ApplicationPath applicationPath;
 
     private static Application createApplication() {
       return new Application(1L, 10000L, 1000, "john.doe@gmail.com", 1, 1);
@@ -51,7 +53,8 @@ class RouterRestTest {
     void setUp() {
       useCase = mock(ApplicationUseCase.class);
       Handler handler = new Handler(useCase);
-      RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter())
+      applicationPath = new ApplicationPath("", "");
+      RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter(), applicationPath)
         .routerFunction();
       webTestClient = WebTestClient.bindToRouterFunction(routes)
         .build();

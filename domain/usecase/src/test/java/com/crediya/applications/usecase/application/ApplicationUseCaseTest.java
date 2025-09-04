@@ -4,7 +4,7 @@ import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.model.loantype.LoanTypeEnum;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
-import com.crediya.applications.model.application.gateways.AuthGateway;
+import com.crediya.applications.model.application.gateways.AuthClient;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;
@@ -25,7 +25,7 @@ class ApplicationUseCaseTest {
   private ApplicationRepository repository;
 
   @Mock
-  private AuthGateway authGateway;
+  private AuthClient authClient;
 
   @Mock
   private Logger logger;
@@ -53,14 +53,14 @@ class ApplicationUseCaseTest {
     Application app = new Application();
     app.setEmail(dto.getEmail());
 
-    when(authGateway.getUserByIdentityCardNumber(dto.getEmail())).thenReturn(Mono.just(true));
+    when(authClient.getUserByIdentityCardNumber(dto.getEmail())).thenReturn(Mono.just(true));
     when(repository.save(any(Application.class))).thenReturn(Mono.just(app));
 
     StepVerifier.create(useCase.startApplication(dto))
       .expectNextMatches(result -> result.getEmail().equals(dto.getEmail()))
       .verifyComplete();
 
-    verify(authGateway).getUserByIdentityCardNumber(dto.getEmail());
+    verify(authClient).getUserByIdentityCardNumber(dto.getEmail());
     verify(repository).save(any(Application.class));
   }
 
@@ -68,13 +68,13 @@ class ApplicationUseCaseTest {
   void testStartApplicationUserDoesNotExist() {
     StartApplicationDTO dto = createDTO();
 
-    when(authGateway.getUserByIdentityCardNumber(dto.getEmail())).thenReturn(Mono.just(false));
+    when(authClient.getUserByIdentityCardNumber(dto.getEmail())).thenReturn(Mono.just(false));
 
     StepVerifier.create(useCase.startApplication(dto))
       .expectError(NotFoundException.class)
       .verify();
 
-    verify(authGateway).getUserByIdentityCardNumber(dto.getEmail());
+    verify(authClient).getUserByIdentityCardNumber(dto.getEmail());
     verify(repository, never()).save(any(Application.class));
   }
 

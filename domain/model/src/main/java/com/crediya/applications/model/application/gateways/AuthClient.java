@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface AuthGateway {
+public interface AuthClient {
   Mono<UserDTO> getUserByIdentityCardNumber(String identityCardNumber);
 
   Flux<UserDTO> getUsers(List<String> identityCardNumbers);
