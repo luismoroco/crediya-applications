@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import reactor.util.context.Context;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,7 @@ class HandlerTest {
   @Test
   void testStartApplication() {
     StartApplicationDTO dto = StartApplicationDTO.builder()
-      .email("john@example.com")
+      .identityCardNumber("12345678")
       .build();
 
     Application application = new Application();
@@ -46,7 +47,8 @@ class HandlerTest {
     when(serverRequest.bodyToMono(StartApplicationDTO.class)).thenReturn(Mono.just(dto));
     when(useCase.startApplication(any(StartApplicationDTO.class))).thenReturn(Mono.just(application));
 
-    Mono<ServerResponse> responseMono = handler.startApplication(serverRequest);
+    Mono<ServerResponse> responseMono = handler.startApplication(serverRequest)
+      .contextWrite(Context.of("identityCardNumber", "12345678"));
 
     StepVerifier.create(responseMono)
       .assertNext(response -> {

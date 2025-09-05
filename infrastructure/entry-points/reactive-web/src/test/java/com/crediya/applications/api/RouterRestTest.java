@@ -2,7 +2,6 @@ package com.crediya.applications.api;
 
 import com.crediya.applications.api.config.ApplicationPath;
 import com.crediya.applications.model.application.Application;
-import com.crediya.applications.model.loantype.LoanTypeEnum;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
@@ -14,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,16 +24,32 @@ class RouterRestTest {
     private WebTestClient webTestClient;
     private ApplicationPath applicationPath;
 
+    @BeforeEach
+    void setUp() {
+      useCase = mock(ApplicationUseCase.class);
+      Handler handler = new Handler(useCase);
+      applicationPath = new ApplicationPath("/api/v1/applications", "/api/v1/applications");
+      RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter(), applicationPath)
+        .routerFunction();
+      webTestClient = WebTestClient.bindToRouterFunction(routes)
+        .build();
+
+      webTestClient = WebTestClient.bindToRouterFunction(routes)
+        .webFilter((exchange, chain) -> chain.filter(exchange).contextWrite(
+          Context.of("identityCardNumber", "123123123")
+        ))
+        .build();
+    }
+
     private static Application createApplication() {
-      return new Application(1L, 10000L, 1000, "john.doe@gmail.com", 1, 1);
+      return new Application(1L, 10000L, 1000, "john.doe@gmail.com", 1, 1L);
     }
 
     private static StartApplicationDTO createStartApplicationDTO() {
       return StartApplicationDTO.builder()
         .amount(10000L)
         .deadline(1000)
-        .email("john.doe@gmail.com")
-        .loanType(LoanTypeEnum.PERSONAL_LOAN)
+        .loanTypeId(1L)
         .identityCardNumber("123123123")
         .build();
     }
@@ -42,21 +58,8 @@ class RouterRestTest {
       return StartApplicationDTO.builder()
         .amount(10000L)
         .deadline(1000)
-        .email("john.doeerteggmail.com")
-        .loanType(LoanTypeEnum.PERSONAL_LOAN)
-        .identityCardNumber("123123123")
-        .build();
-
-    }
-
-    @BeforeEach
-    void setUp() {
-      useCase = mock(ApplicationUseCase.class);
-      Handler handler = new Handler(useCase);
-      applicationPath = new ApplicationPath("", "");
-      RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter(), applicationPath)
-        .routerFunction();
-      webTestClient = WebTestClient.bindToRouterFunction(routes)
+        .loanTypeId(1L)
+        .identityCardNumber("")
         .build();
     }
 
