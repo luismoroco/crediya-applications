@@ -2,7 +2,10 @@ package com.crediya.applications.api;
 
 import com.crediya.applications.api.config.ApplicationPath;
 import com.crediya.applications.model.application.Application;
+import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
+import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 import com.crediya.common.exc.NotFoundException;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
@@ -71,7 +75,7 @@ class RouterRestTest {
         .thenReturn(Mono.just(application));
 
       webTestClient.post()
-        .uri("/api/v1/applications")
+        .uri(applicationPath.startApplication())
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(createStartApplicationDTO())
         .exchange()
@@ -84,10 +88,24 @@ class RouterRestTest {
         .thenReturn(Mono.error(new NotFoundException("Invalid Body")));
 
       webTestClient.post()
-        .uri("/api/v1/applications")
+        .uri(applicationPath.startApplication())
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(createInvalidStartApplicationDTO())
         .exchange()
         .expectStatus().is4xxClientError();
+    }
+
+    @Test
+    void mustGetApplications() {
+      AggregatedApplication ap = new AggregatedApplication();
+      ap.setStatus(ApplicationStatus.PENDING);
+
+      when(useCase.getAggregatedApplications(org.mockito.ArgumentMatchers.any(GetApplicationsDTO.class)))
+        .thenReturn(Flux.just(ap));
+
+      webTestClient.get()
+        .uri(applicationPath.getApplications())
+        .exchange()
+        .expectStatus().is2xxSuccessful();
     }
 }

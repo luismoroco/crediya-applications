@@ -1,7 +1,10 @@
 package com.crediya.applications.api;
 
 import com.crediya.applications.model.application.Application;
+import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
+import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,11 +13,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.util.context.Context;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -53,6 +61,36 @@ class HandlerTest {
     StepVerifier.create(responseMono)
       .assertNext(response -> {
         assert response.statusCode().equals(HttpStatus.CREATED);
+        assert response.headers().getContentType().equals(MediaType.APPLICATION_JSON);
+      })
+      .verifyComplete();
+  }
+
+  @Test
+  void testGetApplications() {
+    GetApplicationsDTO dto = GetApplicationsDTO.builder()
+      .page(1)
+      .pageSize(10)
+      .applicationStatuses(List.of(ApplicationStatus.PENDING.name()))
+      .build();
+
+    AggregatedApplication application = new AggregatedApplication();
+    application.setStatus(ApplicationStatus.PENDING);
+
+    when(useCase.getAggregatedApplications(any(GetApplicationsDTO.class))).thenReturn(Flux.just(application));
+
+    MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+    queryParams.add("page", "1");
+    queryParams.add("page_Size", "10");
+    queryParams.add("application_statuses", ApplicationStatus.PENDING.name());
+
+    when(serverRequest.queryParams()).thenReturn(queryParams);
+
+    Mono<ServerResponse> responseMono = handler.getApplications(serverRequest);
+
+    StepVerifier.create(responseMono)
+      .assertNext(response -> {
+        assert response.statusCode().equals(HttpStatus.OK);
         assert response.headers().getContentType().equals(MediaType.APPLICATION_JSON);
       })
       .verifyComplete();
