@@ -39,7 +39,7 @@ class ApplicationReactiveRepositoryAdapterTest {
     }
 
     public static Application createApplication() {
-        return new Application(1L, 1000L, 12, "john@example.com", 1, 1);
+        return new Application(1L, 1000L, 12, "john@example.com", 1, 1L);
     }
 
     @Test
