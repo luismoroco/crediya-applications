@@ -30,6 +30,14 @@ public class AggregatedApplication {
     return this;
   }
 
+  public ApplicationStatus getStatus() {
+    return ApplicationStatus.fromCode(this.getApplicationStatusId());
+  }
+
+  public void setStatus(ApplicationStatus status) {
+    this.applicationStatusId = status.getCode();
+  }
+
   public ApplicationStatus getApplicationStatus() {
     return ApplicationStatus.fromCode(this.applicationStatusId);
   }
