@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LoanTypeTest {
 
@@ -44,5 +45,15 @@ class LoanTypeTest {
     assertThat(loanType.getMinimumAmount()).isEqualTo(50000L);
     assertThat(loanType.getInterestRate()).isEqualTo(BigDecimal.valueOf(0.08));
     assertThat(loanType.getAutomaticValidation()).isFalse();
+  }
+
+  @Test
+  void testFieldToString() {
+    assertEquals("LOAN TYPE ID", LoanType.Field.LOAN_TYPE_ID.toString());
+    assertEquals("NAME", LoanType.Field.NAME.toString());
+    assertEquals("MAXIMUM AMOUNT", LoanType.Field.MAXIMUM_AMOUNT.toString());
+    assertEquals("MINIMUM AMOUNT", LoanType.Field.MINIMUM_AMOUNT.toString());
+    assertEquals("INTEREST RATE", LoanType.Field.INTEREST_RATE.toString());
+    assertEquals("AUTOMATIC VALIDATION", LoanType.Field.AUTOMATIC_VALIDATION.toString());
   }
 }

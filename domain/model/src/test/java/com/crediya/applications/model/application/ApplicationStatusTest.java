@@ -2,8 +2,7 @@ package com.crediya.applications.model.application;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ApplicationStatusTest {
 
@@ -29,5 +28,10 @@ class ApplicationStatusTest {
   void testValueOf() {
     assertEquals(ApplicationStatus.REJECTED, ApplicationStatus.valueOf("REJECTED"));
     assertEquals(ApplicationStatus.PENDING, ApplicationStatus.valueOf("PENDING"));
+  }
+
+  @Test
+  void testFromCodeInvalidValueThrowsException() {
+    assertThrows(IllegalArgumentException.class, () -> ApplicationStatus.fromCode(99));
   }
 }
