@@ -116,6 +116,33 @@ class ApplicationUseCaseTest {
   }
 
   @Test
+  void testStartApplicationLoanTypeDoesNotExist() {
+    StartApplicationDTO dto = createDTO();
+    dto.setLoanTypeId(1L);
+
+    Application app = new Application();
+    LoanType loanType = LoanType.builder()
+      .loanTypeId(1000L)
+      .name("Personal Loan")
+      .maximumAmount(50000L)
+      .minimumAmount(1000L)
+      .interestRate(BigDecimal.valueOf(5.5))
+      .automaticValidation(true)
+      .build();
+
+    UserDTO user = new UserDTO();
+    user.setIdentityCardNumber("11223344");
+
+    when(loanTypeRepository.findById(dto.getLoanTypeId())).thenReturn(Mono.empty());
+    when(authClient.getUserByIdentityCardNumber(dto.getIdentityCardNumber())).thenReturn(Mono.error(new NotFoundException("")));
+    when(repository.save(any(Application.class))).thenReturn(Mono.just(app));
+
+    StepVerifier.create(useCase.startApplication(dto))
+      .expectError(NotFoundException.class)
+      .verify();
+  }
+
+  @Test
   void testStartApplicationInvalidDTO() {
     StartApplicationDTO dto = new StartApplicationDTO();
     dto.setAmount(1000L);
@@ -148,6 +175,54 @@ class ApplicationUseCaseTest {
     StepVerifier.create(useCase.getAggregatedApplications(dto))
       .expectNextMatches(result -> result.getApplicationStatus().equals(desiredStatus))
       .verifyComplete();
+  }
+
+  @Test
+  void testGetAggregatedApplicationsSuccessWithoutResults() {
+    ApplicationStatus desiredStatus = ApplicationStatus.PENDING;
+
+    GetApplicationsDTO dto = new GetApplicationsDTO();
+    dto.setPage(1);
+    dto.setPageSize(10);
+    dto.setApplicationStatuses(List.of(desiredStatus.name()));
+
+    AggregatedApplication ap = new AggregatedApplication();
+    ap.setApplicationStatusId(ApplicationStatus.PENDING.getCode());
+    ap.setEmail("root@gmail.com");
+
+    UserDTO user = new UserDTO();
+    user.setEmail("root@gmail.com");
+
+    when(repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize())).thenReturn(Flux.empty());
+    when(authClient.getUsers(List.of(ap.getEmail()))).thenReturn(Flux.just(user));
+
+    StepVerifier.create(useCase.getAggregatedApplications(dto))
+      .expectNextCount(0)
+      .verifyComplete();
+  }
+
+  @Test
+  void testGetAggregatedApplicationsRequiredEmailNotFound() {
+    ApplicationStatus desiredStatus = ApplicationStatus.PENDING;
+
+    GetApplicationsDTO dto = new GetApplicationsDTO();
+    dto.setPage(1);
+    dto.setPageSize(10);
+    dto.setApplicationStatuses(List.of(desiredStatus.name()));
+
+    AggregatedApplication ap = new AggregatedApplication();
+    ap.setApplicationStatusId(ApplicationStatus.PENDING.getCode());
+    ap.setEmail("root@gmail.com");
+
+    UserDTO user = new UserDTO();
+    user.setEmail("root-difer@gmail.com");
+
+    when(repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize())).thenReturn(Flux.just(ap));
+    when(authClient.getUsers(List.of(ap.getEmail()))).thenReturn(Flux.just(user));
+
+    StepVerifier.create(useCase.getAggregatedApplications(dto))
+      .expectError(NotFoundException.class)
+      .verify();
   }
 
   @Test
