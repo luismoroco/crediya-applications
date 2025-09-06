@@ -1,6 +1,8 @@
 package com.crediya.applications.r2dbc;
 
 import com.crediya.applications.model.application.Application;
+import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.r2dbc.entity.ApplicationEntity;
 
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,8 @@ import org.reactivecommons.utils.ObjectMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 
@@ -85,6 +89,19 @@ class ApplicationReactiveRepositoryAdapterTest {
 
         StepVerifier.create(result)
           .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
+          .verifyComplete();
+    }
+
+    @Test
+    void mustFindAggregatedApplications() {
+        AggregatedApplication ap = new AggregatedApplication();
+        ap.setApplicationId(1L);
+        ap.setStatus(ApplicationStatus.PENDING);
+
+        when(repositoryAdapter.findAggregatedApplications(List.of("PENDING"), 1, 3)).thenReturn(Flux.just(ap));
+
+        StepVerifier.create(repositoryAdapter.findAggregatedApplications(List.of("PENDING"), 1, 3))
+          .expectNextMatches(u -> u.getApplicationId().equals(ap.getApplicationId()))
           .verifyComplete();
     }
 }

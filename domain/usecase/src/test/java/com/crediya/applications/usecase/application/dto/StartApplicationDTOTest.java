@@ -3,6 +3,7 @@ package com.crediya.applications.usecase.application.dto;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StartApplicationDTOTest {
 
@@ -38,5 +39,19 @@ class StartApplicationDTOTest {
     assertThat(dto.getAmount()).isEqualTo(300000L);
     assertThat(dto.getDeadline()).isEqualTo(36);
     assertThat(dto.getIdentityCardNumber()).isEqualTo("11223344");
+  }
+
+  @Test
+  void testToString() {
+    StartApplicationDTO dto = StartApplicationDTO.builder()
+      .amount(1000L)
+      .deadline(12)
+      .loanTypeId(5L)
+      .identityCardNumber("ABC123")
+      .build();
+
+    String expected = "[amount=1000][deadline=12][loanTypeId=5][identityCardNumber=ABC123]";
+
+    assertEquals(expected, dto.toString());
   }
 }
