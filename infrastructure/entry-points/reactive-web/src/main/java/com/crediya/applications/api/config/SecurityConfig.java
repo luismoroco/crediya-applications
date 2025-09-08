@@ -64,13 +64,13 @@ public class SecurityConfig {
         .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
         .anyExchange().permitAll()
       )
-      .exceptionHandling(spec -> spec
-        .accessDeniedHandler(serverAccessDeniedHandler))
       .oauth2ResourceServer(oauth2 ->
         oauth2
           .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
           .authenticationEntryPoint(authenticationEntryPoint())
       )
+      .exceptionHandling(spec -> spec
+        .accessDeniedHandler(serverAccessDeniedHandler))
       .build();
   }
 
