@@ -1,78 +1,96 @@
 package com.crediya.applications.consumer;
 
 import com.crediya.applications.consumer.config.RestConsumerProperties;
-import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.common.exc.NotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDate;
+import java.io.IOException;
 import java.util.List;
-
-import static org.mockito.Mockito.*;
 
 class AuthClientAdapterTest {
 
-  private WebClient webClient;
-  private RestConsumerProperties properties;
-  private AuthClientAdapter adapter;
+  private static MockWebServer mockBackEnd;
+  private static AuthClientAdapter authClientAdapter;
 
-  @BeforeEach
-  void setUp() {
-    webClient = mock(WebClient.class);
+  @BeforeAll
+  static void setUp() throws IOException {
+    mockBackEnd = new MockWebServer();
+    mockBackEnd.start();
 
-    properties = new RestConsumerProperties();
-    var authConfig = new RestConsumerProperties.CrediyaAuthConfig();
-    var paths = new RestConsumerProperties.CrediyaAuthConfig.AuthPath();
-    paths.setGetUserByIdentityCardNumber("/users/{identityCardNumber}");
-    paths.setGetUsers("/users");
-    authConfig.setPath(paths);
+    RestConsumerProperties properties = new RestConsumerProperties();
+    RestConsumerProperties.CrediyaAuthConfig authConfig = new RestConsumerProperties.CrediyaAuthConfig();
+    RestConsumerProperties.CrediyaAuthConfig.AuthPath path = new RestConsumerProperties.CrediyaAuthConfig.AuthPath();
+
+    path.setGetUserByIdentityCardNumber("/users/{identityCardNumber}");
+    path.setGetUsers("/users");
+    authConfig.setPath(path);
     properties.setCrediyaAuth(authConfig);
 
-    adapter = new AuthClientAdapter(webClient, properties);
+    WebClient webClient = WebClient.builder()
+      .baseUrl(mockBackEnd.url("/").toString())
+      .build();
+
+    authClientAdapter = new AuthClientAdapter(webClient, properties);
+  }
+
+  @AfterAll
+  static void tearDown() throws IOException {
+    mockBackEnd.shutdown();
   }
 
   @Test
-  void getUserByIdentityCardNumber_returnsUser() {
-    UserDTO user = UserDTO.builder().userId(1L).identityCardNumber("123").build();
+  void getUserByIdentityCardNumber_shouldReturnUser() {
+    String identityCard = "12345678";
+    String jsonBody = "{ \"userId\": 1, \"firstName\": \"Luis\", \"lastName\": \"Perez\", \"identityCardNumber\": \"" + identityCard + "\" }";
 
-    AuthClientAdapter spyAdapter = spy(adapter);
-    doReturn(Mono.just(user)).when(spyAdapter).getUserByIdentityCardNumber("123");
+    mockBackEnd.enqueue(new MockResponse()
+      .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+      .setResponseCode(HttpStatus.OK.value())
+      .setBody(jsonBody));
 
-    StepVerifier.create(spyAdapter.getUserByIdentityCardNumber("123"))
-      .expectNext(user)
+    StepVerifier.create(authClientAdapter.getUserByIdentityCardNumber(identityCard))
+      .expectNextMatches(user ->
+        user.getUserId() == 1L &&
+          user.getFirstName().equals("Luis") &&
+          user.getIdentityCardNumber().equals(identityCard))
       .verifyComplete();
   }
 
   @Test
-  void getUserByIdentityCardNumber_notFound() {
-    AuthClientAdapter spyAdapter = spy(adapter);
-    doReturn(Mono.error(new NotFoundException("not found")))
-      .when(spyAdapter).getUserByIdentityCardNumber("999");
+  void getUserByIdentityCardNumber_shouldThrowNotFoundException() {
+    String identityCard = "99999999";
 
-    StepVerifier.create(spyAdapter.getUserByIdentityCardNumber("999"))
+    mockBackEnd.enqueue(new MockResponse()
+      .setResponseCode(HttpStatus.NOT_FOUND.value()));
+
+    StepVerifier.create(authClientAdapter.getUserByIdentityCardNumber(identityCard))
       .expectError(NotFoundException.class)
       .verify();
   }
 
   @Test
-  void getUsers_returnsList() {
-    UserDTO u1 = UserDTO.builder().userId(1L).identityCardNumber("111").build();
-    UserDTO u2 = UserDTO.builder().userId(2L).identityCardNumber("222").build();
+  @DisplayName("getUsers debe devolver lista de UserDTO cuando el backend responde 200")
+  void getUsers_shouldReturnUsers() {
+    String jsonBody = "[" +
+      "{ \"userId\": 1, \"firstName\": \"Ana\", \"lastName\": \"Lopez\", \"identityCardNumber\": \"11111111\" }," +
+      "{ \"userId\": 2, \"firstName\": \"Juan\", \"lastName\": \"Torres\", \"identityCardNumber\": \"22222222\" }" +
+      "]";
 
-    AuthClientAdapter spyAdapter = spy(adapter);
-    doReturn(Flux.just(u1, u2)).when(spyAdapter).getUsers(List.of("111", "222"));
+    mockBackEnd.enqueue(new MockResponse()
+      .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+      .setResponseCode(HttpStatus.OK.value())
+      .setBody(jsonBody));
 
-    StepVerifier.create(spyAdapter.getUsers(List.of("111", "222")))
-      .expectNext(u1, u2)
+    StepVerifier.create(authClientAdapter.getUsers(List.of("11111111", "22222222")))
+      .expectNextMatches(user -> user.getUserId() == 1L && user.getFirstName().equals("Ana"))
+      .expectNextMatches(user -> user.getUserId() == 2L && user.getFirstName().equals("Juan"))
       .verifyComplete();
   }
 }
