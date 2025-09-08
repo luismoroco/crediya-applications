@@ -67,7 +67,8 @@ public class SecurityConfig {
       .oauth2ResourceServer(oauth2 ->
         oauth2
           .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-          .authenticationEntryPoint(authenticationEntryPoint())
+          //.authenticationEntryPoint(authenticationEntryPoint())
+          .authenticationEntryPoint(new JsonAuthenticationEntryPoint())
       )
       .exceptionHandling(spec -> spec
         .accessDeniedHandler(serverAccessDeniedHandler))
