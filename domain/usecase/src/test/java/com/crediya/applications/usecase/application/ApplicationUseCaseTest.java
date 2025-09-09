@@ -11,7 +11,7 @@ import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.applications.model.application.gateways.AuthClient;
 import com.crediya.common.exc.NotFoundException;
-import com.crediya.common.exc.ValidationException;
+import com.crediya.common.validation.exc.ValidationException;
 import com.crediya.common.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
