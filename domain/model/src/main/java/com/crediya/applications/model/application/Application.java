@@ -20,6 +20,10 @@ public class Application {
     this.applicationStatusId = applicationStatus.getCode();
   }
 
+  public ApplicationStatus getApplicationStatus() {
+    return ApplicationStatus.fromCode(this.applicationStatusId);
+  }
+
   public enum Field {
 
     AMOUNT,

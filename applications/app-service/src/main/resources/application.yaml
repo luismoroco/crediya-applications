@@ -82,3 +82,4 @@ route:
   path:
     startApplication: "/api/v1/applications"
     getApplications: "/api/v1/applications"
+    updateApplication: "/api/v1/applications/{application_id}"

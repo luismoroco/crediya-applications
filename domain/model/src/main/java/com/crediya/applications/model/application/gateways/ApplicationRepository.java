@@ -11,4 +11,6 @@ public interface ApplicationRepository {
   Mono<Application> save(Application application);
 
   Flux<AggregatedApplication> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize);
+
+  Mono<Application> findById(Long applicationId);
 }

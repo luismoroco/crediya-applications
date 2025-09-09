@@ -5,5 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "route.path")
 public record ApplicationPath(
   String startApplication,
-  String getApplications
+  String getApplications,
+  String updateApplication
 ) {}

@@ -9,6 +9,7 @@ import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.applications.model.application.gateways.AuthClient;
 import com.crediya.applications.model.application.gateways.dto.UserDTO;
+import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.logging.Logger;
 import com.crediya.common.validation.ValidatorUtils;
@@ -31,6 +32,7 @@ public class ApplicationUseCase {
   public static final String PAGE_SIZE = "page_size";
   private static final String IDENTITY_CARD_NUMBER = "identityCardNumber";
   public static final String APPLICATION_STATUSES = "application_statuses";
+  public static final String APPLICATION_ID = "application_id";
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
@@ -87,6 +89,27 @@ public class ApplicationUseCase {
             }));
       })
       .doOnError(error -> this.logger.error("Error getting aggregated applications [args={}][error={}]", dto, error.getMessage()));
+  }
+
+  public Mono<Application> updateApplication(UpdateApplicationDTO dto) {
+    return validateUpdateApplicationDTOConstraints(dto)
+      .then(this.repository.findById(dto.getApplicationId()))
+      .switchIfEmpty(Mono.defer(() -> {
+        this.logger.error("Application not found [applicationId={}]", dto.getApplicationId());
+        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(APPLICATION_ID, dto.getApplicationId())));
+      }))
+      .flatMap(application -> {
+        this.logger.info("Updating application [applicationId={}][targetApplicationStatus={}]", dto.getApplicationId(), dto.getApplicationStatus());
+        application.setApplicationStatus(dto.getApplicationStatus());
+
+        return repository.save(application);
+      })
+      .doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
+  }
+
+  public static Mono<Void> validateUpdateApplicationDTOConstraints(UpdateApplicationDTO dto) {
+    return ValidatorUtils.nonNull(APPLICATION_ID, dto.getApplicationId())
+      .then(ValidatorUtils.nonNull(APPLICATION_STATUS, dto.getApplicationStatus()));
   }
 
   public static Mono<Void> validateGetApplicationsDTOConstraints(GetApplicationsDTO dto) {

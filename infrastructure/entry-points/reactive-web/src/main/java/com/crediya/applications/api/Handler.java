@@ -5,6 +5,7 @@ import com.crediya.applications.model.application.gateways.dto.AggregatedApplica
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
+import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import com.crediya.common.logging.aspect.AutomaticLogging;
 
 import com.crediya.common.pagination.Paginator;
@@ -24,6 +25,7 @@ import static com.crediya.applications.usecase.application.ApplicationUseCase.PA
 import static com.crediya.applications.usecase.application.ApplicationUseCase.MINIMUM_PAGE;
 import static com.crediya.applications.usecase.application.ApplicationUseCase.MINIMUM_PAGE_SIZE;
 import static com.crediya.applications.usecase.application.ApplicationUseCase.APPLICATION_STATUSES;
+import static com.crediya.applications.usecase.application.ApplicationUseCase.APPLICATION_ID;
 import static com.crediya.applications.api.config.WebContextFilter.IDENTITY_CARD_NUMBER;
 
 @Component
@@ -74,6 +76,21 @@ public class Handler {
                 .content(dto)
                 .build()
             )
+          );
+    }
+
+    @AutomaticLogging
+    @PreAuthorize("hasRole('ADVISOR')")
+    public Mono<ServerResponse> updateApplication(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(UpdateApplicationDTO.class)
+          .flatMap(request -> {
+            request.setApplicationId(Long.valueOf(serverRequest.pathVariable(APPLICATION_ID)));
+            return this.useCase.updateApplication(request);
+          })
+          .flatMap(dto -> ServerResponse
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(dto)
           );
     }
 }
