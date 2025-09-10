@@ -1,16 +1,13 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM eclipse-temurin:21-jdk-alpine
+VOLUME /tmp
 
-RUN apk add --no-cache gradle
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-COPY modules/crediya-common /crediya-common
-WORKDIR /crediya-common
-RUN gradle publishToMavenLocal
+COPY --chown=appuser:appgroup ../applications/app-service/build/libs/crediya-applications.jar app.jar
+COPY .env .env
 
-COPY modules/crediya-applications /app
-WORKDIR /app
-RUN gradle clean build -x validateStructure --no-daemon
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70 -Djava.security.egd=file:/dev/./urandom"
 
-FROM eclipse-temurin:21-jre-alpine AS release
+USER appuser
 
-COPY --from=build /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
