@@ -61,8 +61,8 @@ adapter:
         getUserByIdentityCardNumber: "/api/v1/users/{identity_card_number}"
         getUsers: "/api/v1/users"
   sqs:
-    region: "us-east-1"
-    queueUrl: "http://localhost:4566/000000000000/sample"
+    region: ${AWS_SQS_CREDIYA_SQS_REGION}
+    queueUrl: ${AWS_SQS_CREDIYA_SQS_QUEUE_URL}
     endpoint: "http://localhost:4566"
 resilience4j:
   circuitbreaker:

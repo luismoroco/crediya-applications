@@ -1,5 +1,6 @@
 package com.crediya.applications.sqs.sender;
 
+import com.crediya.applications.model.application.gateways.Notifications;
 import com.crediya.applications.sqs.sender.config.SQSSenderProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -9,13 +10,14 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
-//@Service
+@Service
 @Log4j2
 @RequiredArgsConstructor
-public class SQSSender /*implements SomeGateway*/ {
+public class SQSSender implements Notifications {
     private final SQSSenderProperties properties;
     private final SqsAsyncClient client;
 
+    @Override
     public Mono<String> send(String message) {
         return Mono.fromCallable(() -> buildRequest(message))
                 .flatMap(request -> Mono.fromFuture(client.sendMessage(request)))

@@ -2,6 +2,7 @@ package com.crediya.applications.usecase.application;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.application.gateways.Notifications;
 import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
@@ -36,6 +37,7 @@ public class ApplicationUseCase {
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
+  private final Notifications notifications;
   private final AuthClient authClient;
   private final Logger logger;
 
@@ -104,6 +106,10 @@ public class ApplicationUseCase {
 
         return repository.save(application);
       })
+      .flatMap(application ->
+        notifications.send(String.format("Application updated [applicationId=%s]", dto.getApplicationId()))
+          .thenReturn(application)
+      )
       .doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
   }
 
