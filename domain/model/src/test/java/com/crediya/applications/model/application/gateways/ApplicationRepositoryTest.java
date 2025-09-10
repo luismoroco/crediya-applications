@@ -1,7 +1,7 @@
 package com.crediya.applications.model.application.gateways;
 
 import com.crediya.applications.model.application.Application;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -56,7 +56,7 @@ class ApplicationRepositoryTest {
     int page = 0;
     int pageSize = 10;
 
-    AggregatedApplication app = AggregatedApplication.builder()
+    AggregatedApplicationDTO app = AggregatedApplicationDTO.builder()
       .applicationId(1L)
       .amount(10000L)
       .deadline(24)

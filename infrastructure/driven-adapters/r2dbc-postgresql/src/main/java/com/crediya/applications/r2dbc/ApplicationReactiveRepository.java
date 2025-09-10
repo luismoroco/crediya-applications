@@ -1,6 +1,6 @@
 package com.crediya.applications.r2dbc;
 
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.r2dbc.entity.ApplicationEntity;
 
 import org.springframework.data.r2dbc.repository.Query;
@@ -29,7 +29,7 @@ public interface ApplicationReactiveRepository extends ReactiveCrudRepository<Ap
     WHERE a.application_status_id IN (:application_status_ids)
     LIMIT :pageSize OFFSET :offset
     """)
-  Flux<AggregatedApplication> findAggregatedApplications(
+  Flux<AggregatedApplicationDTO> findAggregatedApplications(
     @Param("application_status_ids") List<Integer> applicationStatusIds,
     @Param("pageSize") int pageSize,
     @Param("offset") int offset

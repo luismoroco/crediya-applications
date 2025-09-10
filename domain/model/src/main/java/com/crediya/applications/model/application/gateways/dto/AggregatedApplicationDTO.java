@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class AggregatedApplication {
+public class AggregatedApplicationDTO {
 
   private Long applicationId;
   private Long amount;
@@ -23,7 +23,7 @@ public class AggregatedApplication {
   private Long basicWaging;
   private BigDecimal totalDebt;
 
-  public AggregatedApplication update(UserDTO userDTO) {
+  public AggregatedApplicationDTO update(UserDTO userDTO) {
     this.setName(String.format("%s %s", userDTO.getFirstName(), userDTO.getLastName()));
     this.setBasicWaging(userDTO.getBasicWaging());
 

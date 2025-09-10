@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AggregatedApplicationTest {
+public class AggregatedApplicationDTOTest {
 
   @Test
   void testBuilderCreatesAggregatedApplication() {
-    AggregatedApplication app = AggregatedApplication.builder()
+    AggregatedApplicationDTO app = AggregatedApplicationDTO.builder()
       .applicationId(1L)
       .amount(10000L)
       .deadline(12)
@@ -38,7 +38,7 @@ public class AggregatedApplicationTest {
 
   @Test
   void testUpdateWithUserDTO() {
-    AggregatedApplication app = AggregatedApplication.builder()
+    AggregatedApplicationDTO app = AggregatedApplicationDTO.builder()
       .name("Old Name")
       .basicWaging(1000L)
       .build();
@@ -57,7 +57,7 @@ public class AggregatedApplicationTest {
 
   @Test
   void testGetApplicationStatus() {
-    AggregatedApplication app = AggregatedApplication.builder()
+    AggregatedApplicationDTO app = AggregatedApplicationDTO.builder()
       .applicationStatusId(1)
       .build();
 

@@ -2,7 +2,7 @@ package com.crediya.applications.r2dbc;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.r2dbc.entity.ApplicationEntity;
 
 import org.junit.jupiter.api.Test;
@@ -94,7 +94,7 @@ class ApplicationReactiveRepositoryAdapterTest {
 
     @Test
     void mustFindAggregatedApplications() {
-        AggregatedApplication ap = new AggregatedApplication();
+        AggregatedApplicationDTO ap = new AggregatedApplicationDTO();
         ap.setApplicationId(1L);
         ap.setStatus(ApplicationStatus.PENDING);
 

@@ -2,9 +2,10 @@ package com.crediya.applications.usecase.application;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
-import com.crediya.applications.model.application.gateways.Notifications;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.ApplicationEventPublisher;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
+import com.crediya.applications.model.application.gateways.event.ApplicationUpdatedEvent;
 import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
@@ -37,7 +38,7 @@ public class ApplicationUseCase {
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
-  private final Notifications notifications;
+  private final ApplicationEventPublisher eventPublisher;
   private final AuthClient authClient;
   private final Logger logger;
 
@@ -65,7 +66,7 @@ public class ApplicationUseCase {
       });
   }
 
-  public Flux<AggregatedApplication> getAggregatedApplications(GetApplicationsDTO dto) {
+  public Flux<AggregatedApplicationDTO> getAggregatedApplications(GetApplicationsDTO dto) {
     return validateGetApplicationsDTOConstraints(dto)
       .thenMany(this.repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize()))
       .collectList()
@@ -75,7 +76,7 @@ public class ApplicationUseCase {
           return Flux.empty();
         }
 
-        List<String> userEmails = dtos.stream().map(AggregatedApplication::getEmail).toList();
+        List<String> userEmails = dtos.stream().map(AggregatedApplicationDTO::getEmail).toList();
 
         return this.authClient.getUsers(userEmails)
           .collectMap(UserDTO::getEmail)
@@ -107,7 +108,7 @@ public class ApplicationUseCase {
         return repository.save(application);
       })
       .flatMap(application ->
-        notifications.send(String.format("Application updated [applicationId=%s]", dto.getApplicationId()))
+        this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
           .thenReturn(application)
       )
       .doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));

@@ -3,7 +3,7 @@ package com.crediya.applications.usecase.application;
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.applications.model.loantype.LoanType;
 import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
@@ -162,7 +162,7 @@ class ApplicationUseCaseTest {
     dto.setPageSize(10);
     dto.setApplicationStatuses(List.of(desiredStatus.name()));
 
-    AggregatedApplication ap = new AggregatedApplication();
+    AggregatedApplicationDTO ap = new AggregatedApplicationDTO();
     ap.setApplicationStatusId(ApplicationStatus.PENDING.getCode());
     ap.setEmail("root@gmail.com");
 
@@ -186,7 +186,7 @@ class ApplicationUseCaseTest {
     dto.setPageSize(10);
     dto.setApplicationStatuses(List.of(desiredStatus.name()));
 
-    AggregatedApplication ap = new AggregatedApplication();
+    AggregatedApplicationDTO ap = new AggregatedApplicationDTO();
     ap.setApplicationStatusId(ApplicationStatus.PENDING.getCode());
     ap.setEmail("root@gmail.com");
 
@@ -210,7 +210,7 @@ class ApplicationUseCaseTest {
     dto.setPageSize(10);
     dto.setApplicationStatuses(List.of(desiredStatus.name()));
 
-    AggregatedApplication ap = new AggregatedApplication();
+    AggregatedApplicationDTO ap = new AggregatedApplicationDTO();
     ap.setApplicationStatusId(ApplicationStatus.PENDING.getCode());
     ap.setEmail("root@gmail.com");
 

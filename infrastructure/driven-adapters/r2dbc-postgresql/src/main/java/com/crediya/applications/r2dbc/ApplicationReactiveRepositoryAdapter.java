@@ -1,6 +1,6 @@
 package com.crediya.applications.r2dbc;
 
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
@@ -10,7 +10,6 @@ import com.crediya.applications.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class ApplicationReactiveRepositoryAdapter extends ReactiveAdapterOperati
   }
 
   @Override
-  public Flux<AggregatedApplication> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize) {
+  public Flux<AggregatedApplicationDTO> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize) {
     List<Integer> applicationStatusIds = applicationStatus.stream()
       .map(ApplicationStatus::valueOf)
       .map(ApplicationStatus::getCode)

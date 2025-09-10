@@ -2,7 +2,7 @@ package com.crediya.applications.api;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
@@ -74,7 +74,7 @@ class HandlerTest {
       .applicationStatuses(List.of(ApplicationStatus.PENDING.name()))
       .build();
 
-    AggregatedApplication application = new AggregatedApplication();
+    AggregatedApplicationDTO application = new AggregatedApplicationDTO();
     application.setStatus(ApplicationStatus.PENDING);
 
     when(useCase.getAggregatedApplications(any(GetApplicationsDTO.class))).thenReturn(Flux.just(application));

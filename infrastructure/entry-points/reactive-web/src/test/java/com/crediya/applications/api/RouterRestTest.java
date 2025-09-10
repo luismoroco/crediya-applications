@@ -3,7 +3,7 @@ package com.crediya.applications.api;
 import com.crediya.applications.api.config.ApplicationPath;
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
@@ -97,7 +97,7 @@ class RouterRestTest {
 
     @Test
     void mustGetApplications() {
-      AggregatedApplication ap = new AggregatedApplication();
+      AggregatedApplicationDTO ap = new AggregatedApplicationDTO();
       ap.setStatus(ApplicationStatus.PENDING);
 
       when(useCase.getAggregatedApplications(org.mockito.ArgumentMatchers.any(GetApplicationsDTO.class)))

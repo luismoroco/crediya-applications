@@ -1,7 +1,7 @@
 package com.crediya.applications.api;
 
 import com.crediya.applications.model.application.ApplicationStatus;
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
@@ -70,7 +70,7 @@ public class Handler {
             .status(HttpStatus.OK)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
-              Paginator.<AggregatedApplication>builder()
+              Paginator.<AggregatedApplicationDTO>builder()
                 .page(page)
                 .size(pageSize)
                 .content(dto)

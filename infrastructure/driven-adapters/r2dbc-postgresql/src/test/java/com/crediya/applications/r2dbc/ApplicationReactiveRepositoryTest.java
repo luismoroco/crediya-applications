@@ -1,6 +1,6 @@
 package com.crediya.applications.r2dbc;
 
-import com.crediya.applications.model.application.gateways.dto.AggregatedApplication;
+import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,7 +21,7 @@ class ApplicationReactiveRepositoryTest {
 
   @Test
   void testRepositoryIsCalled() {
-    AggregatedApplication app = AggregatedApplication.builder()
+    AggregatedApplicationDTO app = AggregatedApplicationDTO.builder()
       .applicationId(1L)
       .amount(5000L)
       .email("unit@test.com")
