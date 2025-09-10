@@ -63,9 +63,9 @@ public class ApplicationUseCase {
         application.setApplicationStatus(ApplicationStatus.PENDING);
         application.setLoanTypeId(dto.getLoanTypeId());
 
-        return repository.save(application)
-          .doOnError(error -> this.logger.error("Error starting application [args={}][error={}]", dto, error.getMessage()));
-      });
+        return repository.save(application);
+      })
+      .doOnError(error -> this.logger.error("Error starting application [args={}][error={}]", dto, error.getMessage()));
   }
 
   public Flux<AggregatedApplicationDTO> getAggregatedApplications(GetApplicationsDTO dto) {
