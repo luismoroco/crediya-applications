@@ -7,6 +7,7 @@ import com.crediya.applications.model.application.gateways.dto.AggregatedApplica
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
+import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 import com.crediya.common.exc.NotFoundException;
 
@@ -108,4 +109,23 @@ class RouterRestTest {
         .exchange()
         .expectStatus().is2xxSuccessful();
     }
+
+  @Test
+  void mustUpdateApplications() {
+    UpdateApplicationDTO dto = new UpdateApplicationDTO();
+    dto.setApplicationId(1L);
+    dto.setApplicationStatus(ApplicationStatus.PENDING);
+
+    Application ap = new Application();
+    ap.setApplicationId(1L);
+    ap.setApplicationStatus(ApplicationStatus.REJECTED);
+
+    when(useCase.updateApplication(org.mockito.ArgumentMatchers.any(UpdateApplicationDTO.class)))
+      .thenReturn(Mono.just(ap));
+
+    webTestClient.put()
+      .uri(applicationPath.updateApplication(), "1")
+      .exchange()
+      .expectStatus().is2xxSuccessful();
+  }
 }

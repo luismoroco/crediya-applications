@@ -6,6 +6,7 @@ import com.crediya.applications.model.application.gateways.dto.AggregatedApplica
 import com.crediya.applications.usecase.application.ApplicationUseCase;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
+import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -87,6 +88,29 @@ class HandlerTest {
     when(serverRequest.queryParams()).thenReturn(queryParams);
 
     Mono<ServerResponse> responseMono = handler.getApplications(serverRequest);
+
+    StepVerifier.create(responseMono)
+      .assertNext(response -> {
+        assert response.statusCode().equals(HttpStatus.OK);
+        assert response.headers().getContentType().equals(MediaType.APPLICATION_JSON);
+      })
+      .verifyComplete();
+  }
+
+  @Test
+  void testUpdateApplication() {
+    UpdateApplicationDTO dto = new UpdateApplicationDTO();
+    dto.setApplicationId(1L);
+    dto.setApplicationStatus(ApplicationStatus.PENDING);
+
+    Application application = new Application();
+    application.setApplicationId(1L);
+
+    when(serverRequest.bodyToMono(UpdateApplicationDTO.class)).thenReturn(Mono.just(dto));
+    when(serverRequest.pathVariable("application_id")).thenReturn("1");
+    when(useCase.updateApplication(any(UpdateApplicationDTO.class))).thenReturn(Mono.just(application));
+
+    Mono<ServerResponse> responseMono = handler.updateApplication(serverRequest);
 
     StepVerifier.create(responseMono)
       .assertNext(response -> {
