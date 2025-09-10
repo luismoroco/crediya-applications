@@ -2,6 +2,7 @@ package com.crediya.applications.usecase.application;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.application.gateways.ApplicationEventPublisher;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
 import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.model.application.gateways.dto.UserDTO;
@@ -10,7 +11,9 @@ import com.crediya.applications.model.loantype.gateways.LoanTypeRepository;
 import com.crediya.applications.usecase.application.dto.GetApplicationsDTO;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
 import com.crediya.applications.model.application.gateways.AuthClient;
+import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import com.crediya.common.exc.NotFoundException;
+import com.crediya.common.transaction.Transaction;
 import com.crediya.common.validation.exc.ValidationException;
 import com.crediya.common.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +41,12 @@ class ApplicationUseCaseTest {
 
   @Mock
   private Logger logger;
+
+  @Mock
+  private ApplicationEventPublisher publisher;
+
+  @Mock
+  private Transaction transaction;
 
   @Mock
   private LoanTypeRepository loanTypeRepository;
@@ -236,5 +245,88 @@ class ApplicationUseCaseTest {
       .expectErrorMatches(throwable -> throwable instanceof ValidationException &&
         throwable.getMessage().contains("invalid"))
       .verify();
+  }
+
+  @Test
+  void testValidateUpdateApplicationDTOConstraintsSuccess() {
+    UpdateApplicationDTO dto = new UpdateApplicationDTO();
+    dto.setApplicationId(1L);
+    dto.setApplicationStatus(ApplicationStatus.PENDING);
+
+    StepVerifier.create(ApplicationUseCase.validateUpdateApplicationDTOConstraints(dto))
+      .verifyComplete();
+  }
+
+  @Test
+  void testUpdateApplicationSuccess() {
+    UpdateApplicationDTO dto = UpdateApplicationDTO.builder()
+      .applicationId(1L)
+      .applicationStatus(ApplicationStatus.PENDING)
+      .build();
+
+    Application application = Application.builder()
+      .applicationId(1L)
+      .applicationStatusId(ApplicationStatus.PENDING.getCode())
+      .build();
+
+    when(transaction.init(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(repository.findById(dto.getApplicationId())).thenReturn(Mono.just(application));
+    when(repository.save(any(Application.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+    when(publisher.notifyApplicationUpdated(any())).thenReturn(Mono.just("event-sent"));
+
+    StepVerifier.create(useCase.updateApplication(dto))
+      .expectNextMatches(app -> app.getApplicationId().equals(1L) &&
+        app.getApplicationStatus() == ApplicationStatus.PENDING)
+      .verifyComplete();
+
+    verify(repository, times(1)).findById(dto.getApplicationId());
+    verify(repository, times(1)).save(any(Application.class));
+    verify(publisher, times(1)).notifyApplicationUpdated(any());
+  }
+
+  @Test
+  void testUpdateApplicationNotFound() {
+    UpdateApplicationDTO dto = UpdateApplicationDTO.builder()
+      .applicationId(99L)
+      .applicationStatus(ApplicationStatus.PENDING)
+      .build();
+
+    when(transaction.init(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(repository.findById(dto.getApplicationId())).thenReturn(Mono.empty());
+
+    StepVerifier.create(useCase.updateApplication(dto))
+      .expectError(NotFoundException.class)
+      .verify();
+
+    verify(repository, times(1)).findById(dto.getApplicationId());
+    verify(repository, never()).save(any());
+    verify(publisher, never()).notifyApplicationUpdated(any());
+  }
+
+  @Test
+  void testUpdateApplicationEventPublisherFails() {
+    UpdateApplicationDTO dto = UpdateApplicationDTO.builder()
+      .applicationId(1L)
+      .applicationStatus(ApplicationStatus.PENDING)
+      .build();
+
+    Application application = Application.builder()
+      .applicationId(1L)
+      .applicationStatusId(ApplicationStatus.PENDING.getCode())
+      .build();
+
+    when(transaction.init(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(repository.findById(dto.getApplicationId())).thenReturn(Mono.just(application));
+    when(repository.save(any(Application.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+    when(publisher.notifyApplicationUpdated(any())).thenReturn(Mono.error(new RuntimeException("event failed")));
+
+    StepVerifier.create(useCase.updateApplication(dto))
+      .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
+        throwable.getMessage().equals("event failed"))
+      .verify();
+
+    verify(repository, times(1)).findById(dto.getApplicationId());
+    verify(repository, times(1)).save(any());
+    verify(publisher, times(1)).notifyApplicationUpdated(any());
   }
 }
