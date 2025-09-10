@@ -32,7 +32,7 @@ class RouterRestTest {
     void setUp() {
       useCase = mock(ApplicationUseCase.class);
       Handler handler = new Handler(useCase);
-      applicationPath = new ApplicationPath("/api/v1/applications", "/api/v1/applications");
+      applicationPath = new ApplicationPath("/api/v1/applications", "/api/v1/applications", "/api/v1/applications/{application_id}");
       RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter(), applicationPath)
         .routerFunction();
       webTestClient = WebTestClient.bindToRouterFunction(routes)

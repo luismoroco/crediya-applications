@@ -8,9 +8,10 @@ public class ApplicationPathTest {
 
   @Test
   void shouldReturnValuesFromRecord() {
-    ApplicationPath path = new ApplicationPath("/start", "/get");
+    ApplicationPath path = new ApplicationPath("/start", "/get", "/update");
 
     assertThat(path.startApplication()).isEqualTo("/start");
     assertThat(path.getApplications()).isEqualTo("/get");
+    assertThat(path.updateApplication()).isEqualTo("/update");
   }
 }
