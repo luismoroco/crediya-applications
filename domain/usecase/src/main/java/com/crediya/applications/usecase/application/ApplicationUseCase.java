@@ -14,6 +14,7 @@ import com.crediya.applications.model.application.gateways.dto.UserDTO;
 import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.logging.Logger;
+import com.crediya.common.transaction.Transaction;
 import com.crediya.common.validation.ValidatorUtils;
 import static com.crediya.applications.model.application.Application.Field.*;
 import static com.crediya.common.LogCatalog.*;
@@ -39,6 +40,7 @@ public class ApplicationUseCase {
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
   private final ApplicationEventPublisher eventPublisher;
+  private final Transaction transaction;
   private final AuthClient authClient;
   private final Logger logger;
 
@@ -95,23 +97,24 @@ public class ApplicationUseCase {
   }
 
   public Mono<Application> updateApplication(UpdateApplicationDTO dto) {
-    return validateUpdateApplicationDTOConstraints(dto)
-      .then(this.repository.findById(dto.getApplicationId()))
-      .switchIfEmpty(Mono.defer(() -> {
-        this.logger.error("Application not found [applicationId={}]", dto.getApplicationId());
-        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(APPLICATION_ID, dto.getApplicationId())));
-      }))
-      .flatMap(application -> {
-        this.logger.info("Updating application [applicationId={}][targetApplicationStatus={}]", dto.getApplicationId(), dto.getApplicationStatus());
-        application.setApplicationStatus(dto.getApplicationStatus());
+    return this.transaction.init(
+      validateUpdateApplicationDTOConstraints(dto)
+        .then(this.repository.findById(dto.getApplicationId()))
+        .switchIfEmpty(Mono.defer(() -> {
+          this.logger.error("Application not found [applicationId={}]", dto.getApplicationId());
+          return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(APPLICATION_ID, dto.getApplicationId())));
+        }))
+        .flatMap(application -> {
+          this.logger.info("Updating application [applicationId={}][targetApplicationStatus={}]", dto.getApplicationId(), dto.getApplicationStatus());
+          application.setApplicationStatus(dto.getApplicationStatus());
 
-        return repository.save(application);
-      })
-      .flatMap(application ->
-        this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
-          .thenReturn(application)
-      )
-      .doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
+          return repository.save(application);
+        })
+        .flatMap(application ->
+          this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
+            .thenReturn(application)
+        )
+    ).doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
   }
 
   public static Mono<Void> validateUpdateApplicationDTOConstraints(UpdateApplicationDTO dto) {

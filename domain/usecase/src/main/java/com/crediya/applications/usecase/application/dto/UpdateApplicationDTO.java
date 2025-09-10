@@ -12,4 +12,9 @@ public class UpdateApplicationDTO {
 
   private Long applicationId;
   private ApplicationStatus applicationStatus;
+
+  @Override
+  public String toString() {
+    return String.format("[applicationId=%s][applicationStatus=%s]", applicationId, applicationStatus);
+  }
 }
