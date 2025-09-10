@@ -55,7 +55,7 @@ cors:
 adapter:
   restconsumer:
     crediya-auth:
-      url: "http://localhost:8081"
+      url: "http://${CREDIYA_AUTH_HOST}:${CREDIYA_AUTH_PORT}"
       timeout: 5000
       path:
         getUserByIdentityCardNumber: "/api/v1/users/{identity_card_number}"
