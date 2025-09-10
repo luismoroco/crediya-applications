@@ -21,6 +21,5 @@ class MicrometerMetricPublisherTest {
         micrometerMetricPublisher.close();
 
         assertNotNull(micrometerMetricPublisher);
-
     }
 }
