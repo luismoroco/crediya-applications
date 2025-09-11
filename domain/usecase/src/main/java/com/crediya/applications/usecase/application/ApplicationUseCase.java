@@ -49,55 +49,57 @@ public class ApplicationUseCase {
   private final Logger logger;
 
   public Mono<Application> startApplication(StartApplicationDTO dto) {
-    return validateStartApplicationDTOConstraints(dto)
-      .then(this.loanTypeRepository.findById(dto.getLoanTypeId()))
-      .switchIfEmpty(Mono.defer(() -> {
-        this.logger.error("Loan type not found [loanTypeId={}]", dto.getLoanTypeId());
-        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, dto.getLoanTypeId())));
-      }))
-      .flatMap(loanType -> ValidatorUtils.numberBetween(AMOUNT, dto.getAmount(), loanType.getMinimumAmount(), loanType.getMaximumAmount())
-        .then(this.authClient.getUserByIdentityCardNumber(dto.getIdentityCardNumber()))
-        .map(userDTO -> Tuples.of(userDTO, loanType))
-      )
-      .flatMap(tuple -> {
-        UserDTO userDTO = tuple.getT1();
-        LoanType loanType = tuple.getT2();
+    return this.transaction.init(
+      validateStartApplicationDTOConstraints(dto)
+        .then(this.loanTypeRepository.findById(dto.getLoanTypeId()))
+        .switchIfEmpty(Mono.defer(() -> {
+          this.logger.error("Loan type not found [loanTypeId={}]", dto.getLoanTypeId());
+          return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, dto.getLoanTypeId())));
+        }))
+        .flatMap(loanType -> ValidatorUtils.numberBetween(AMOUNT, dto.getAmount(), loanType.getMinimumAmount(), loanType.getMaximumAmount())
+          .then(this.authClient.getUserByIdentityCardNumber(dto.getIdentityCardNumber()))
+          .map(userDTO -> Tuples.of(userDTO, loanType))
+        )
+        .flatMap(tuple -> {
+          UserDTO userDTO = tuple.getT1();
+          LoanType loanType = tuple.getT2();
 
-        Application application = new Application();
-        application.setAmount(dto.getAmount());
-        application.setDeadline(dto.getDeadline());
-        application.setEmail(userDTO.getEmail());
-        application.setApplicationStatus(ApplicationStatus.PENDING);
-        application.setLoanTypeId(loanType.getLoanTypeId());
+          Application application = new Application();
+          application.setAmount(dto.getAmount());
+          application.setDeadline(dto.getDeadline());
+          application.setEmail(userDTO.getEmail());
+          application.setApplicationStatus(ApplicationStatus.PENDING);
+          application.setLoanTypeId(loanType.getLoanTypeId());
 
-        return repository.save(application)
-          .map(ap -> Tuples.of(ap, userDTO,  loanType));
-      })
-      .flatMap(tuple -> {
-        Application application = tuple.getT1();
-        UserDTO userDTO = tuple.getT2();
-        LoanType loanType = tuple.getT3();
+          return repository.save(application)
+            .map(ap -> Tuples.of(ap, userDTO,  loanType));
+        })
+        .flatMap(tuple -> {
+          Application application = tuple.getT1();
+          UserDTO userDTO = tuple.getT2();
+          LoanType loanType = tuple.getT3();
 
-        if (Boolean.FALSE.equals(loanType.getAutomaticValidation())) {
-          return Mono.just(application);
-        }
+          if (Boolean.FALSE.equals(loanType.getAutomaticValidation())) {
+            return Mono.just(application);
+          }
 
-        return this.repository.findMinimalLoans(
-            List.of(ApplicationStatus.APPROVED),
-            List.of(userDTO.getEmail())
-          )
-          .collectList()
-          .flatMap(minimalLoanDTOS ->
-            this.eventPublisher.notifyAutomaticEvaluationLoanRequestStarted(
-              AutomaticEvaluationLoanRequestStartedEvent.builder()
-                .application(application)
-                .loanType(loanType)
-                .minimalLoanDTOS(minimalLoanDTOS)
-                .build()
+          return this.repository.findMinimalLoans(
+              List.of(ApplicationStatus.APPROVED),
+              List.of(userDTO.getEmail())
             )
-            .thenReturn(application)
-          );
-      })
+            .collectList()
+            .flatMap(minimalLoanDTOS ->
+              this.eventPublisher.notifyAutomaticEvaluationLoanRequestStarted(
+                  AutomaticEvaluationLoanRequestStartedEvent.builder()
+                    .application(application)
+                    .loanType(loanType)
+                    .minimalLoanDTOS(minimalLoanDTOS)
+                    .build()
+                )
+                .thenReturn(application)
+            );
+        })
+    )
       .doOnError(error -> this.logger.error("Error starting application [args={}][error={}]", dto, error.getMessage()));
   }
 
