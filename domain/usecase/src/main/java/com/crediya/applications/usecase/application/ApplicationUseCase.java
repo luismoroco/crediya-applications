@@ -154,7 +154,8 @@ public class ApplicationUseCase {
           return this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
             .thenReturn(application);
         })
-    ).doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
+    )
+      .doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
   }
 
   public static Mono<Void> validateUpdateApplicationDTOConstraints(UpdateApplicationDTO dto) {
