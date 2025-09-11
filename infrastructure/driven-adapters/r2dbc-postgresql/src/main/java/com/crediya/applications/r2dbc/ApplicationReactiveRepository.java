@@ -27,11 +27,16 @@ public interface ApplicationReactiveRepository extends ReactiveCrudRepository<Ap
     LEFT JOIN loan_type lt 
         ON a.loan_type_id = lt.loan_type_id
     WHERE a.application_status_id IN (:application_status_ids)
+      AND (
+        'NONE' IN (:emails)
+        OR a.email IN (:emails)
+      )
     LIMIT :pageSize OFFSET :offset
     """)
   Flux<AggregatedApplicationDTO> findAggregatedApplications(
     @Param("application_status_ids") List<Integer> applicationStatusIds,
     @Param("pageSize") int pageSize,
-    @Param("offset") int offset
+    @Param("offset") int offset,
+    @Param("emails") List<String> emails
   );
 }

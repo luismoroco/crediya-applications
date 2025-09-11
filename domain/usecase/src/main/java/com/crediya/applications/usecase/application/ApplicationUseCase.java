@@ -36,6 +36,7 @@ public class ApplicationUseCase {
   private static final String IDENTITY_CARD_NUMBER = "identityCardNumber";
   public static final String APPLICATION_STATUSES = "application_statuses";
   public static final String APPLICATION_ID = "application_id";
+  public static final String EMAILS = "emails";
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
@@ -70,7 +71,7 @@ public class ApplicationUseCase {
 
   public Flux<AggregatedApplicationDTO> getAggregatedApplications(GetApplicationsDTO dto) {
     return validateGetApplicationsDTOConstraints(dto)
-      .thenMany(this.repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize()))
+      .thenMany(this.repository.findAggregatedApplications(dto.getApplicationStatuses(), dto.getPage(), dto.getPageSize(), dto.getEmails()))
       .collectList()
       .flatMapMany(dtos -> {
         if (dtos.isEmpty()) {

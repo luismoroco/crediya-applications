@@ -26,6 +26,7 @@ import static com.crediya.applications.usecase.application.ApplicationUseCase.MI
 import static com.crediya.applications.usecase.application.ApplicationUseCase.MINIMUM_PAGE_SIZE;
 import static com.crediya.applications.usecase.application.ApplicationUseCase.APPLICATION_STATUSES;
 import static com.crediya.applications.usecase.application.ApplicationUseCase.APPLICATION_ID;
+import static com.crediya.applications.usecase.application.ApplicationUseCase.EMAILS;
 import static com.crediya.applications.api.config.WebContextFilter.IDENTITY_CARD_NUMBER;
 
 @Component
@@ -57,11 +58,13 @@ public class Handler {
         int pageSize = Integer.parseInt(serverRequest.queryParam(PAGE_SIZE).orElse(String.valueOf(MINIMUM_PAGE_SIZE)));
         List<String> applicationStatuses = serverRequest.queryParams()
           .getOrDefault(APPLICATION_STATUSES, List.of(ApplicationStatus.PENDING.name()));
+        List<String> emails = serverRequest.queryParams().getOrDefault(EMAILS, List.of());
 
         GetApplicationsDTO request = GetApplicationsDTO.builder()
           .page(page)
           .pageSize(pageSize)
           .applicationStatuses(applicationStatuses)
+          .emails(emails)
           .build();
 
         return this.useCase.getAggregatedApplications(request)

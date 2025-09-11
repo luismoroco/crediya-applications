@@ -10,7 +10,7 @@ import java.util.List;
 public interface ApplicationRepository {
   Mono<Application> save(Application application);
 
-  Flux<AggregatedApplicationDTO> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize);
+  Flux<AggregatedApplicationDTO> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize, List<String> emails);
 
   Mono<Application> findById(Long applicationId);
 }

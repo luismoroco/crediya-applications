@@ -14,6 +14,7 @@ public class GetApplicationsDTO {
   private Integer page;
   private Integer pageSize;
   private List<String> applicationStatuses;
+  private List<String> emails;
 
   @Override
   public String toString() {

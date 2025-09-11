@@ -21,17 +21,19 @@ public class ApplicationReactiveRepositoryAdapter extends ReactiveAdapterOperati
   ApplicationReactiveRepository
 > implements ApplicationRepository {
 
+  private static final String DISABLE_SEARCHING_KEY = "NONE";
+
   public ApplicationReactiveRepositoryAdapter(ApplicationReactiveRepository repository, ObjectMapper mapper) {
     super(repository, mapper, d -> mapper.map(d, Application.class));
   }
 
   @Override
-  public Flux<AggregatedApplicationDTO> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize) {
+  public Flux<AggregatedApplicationDTO> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize, List<String> emails) {
     List<Integer> applicationStatusIds = applicationStatus.stream()
       .map(ApplicationStatus::valueOf)
       .map(ApplicationStatus::getCode)
       .toList();
 
-    return this.repository.findAggregatedApplications(applicationStatusIds, pageSize, (page - 1) * pageSize);
+    return this.repository.findAggregatedApplications(applicationStatusIds, pageSize, (page - 1) * pageSize, emails.isEmpty() ? List.of(DISABLE_SEARCHING_KEY) : emails);
   }
 }
