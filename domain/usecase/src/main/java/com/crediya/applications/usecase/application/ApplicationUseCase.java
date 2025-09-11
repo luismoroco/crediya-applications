@@ -91,6 +91,7 @@ public class ApplicationUseCase {
             .flatMap(minimalLoanDTOS ->
               this.eventPublisher.notifyAutomaticEvaluationLoanRequestStarted(
                   AutomaticEvaluationLoanRequestStartedEvent.builder()
+                    .basicWaging(userDTO.getBasicWaging())
                     .application(application)
                     .loanType(loanType)
                     .minimalLoanDTOS(minimalLoanDTOS)

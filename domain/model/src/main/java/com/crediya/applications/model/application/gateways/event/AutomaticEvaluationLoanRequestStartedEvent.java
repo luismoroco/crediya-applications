@@ -15,6 +15,7 @@ import java.util.List;
 @ToString
 public class AutomaticEvaluationLoanRequestStartedEvent {
 
+  private Long basicWaging;
   private Application application;
   private LoanType loanType;
   private List<MinimalLoanDTO> minimalLoanDTOS;
