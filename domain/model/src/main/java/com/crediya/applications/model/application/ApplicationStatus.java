@@ -7,7 +7,8 @@ public enum ApplicationStatus {
 
   REJECTED(1),
   PENDING(2),
-  MANUAL_REVIEW(3);
+  MANUAL_REVIEW(3),
+  APPROVED(4);
 
   private final int code;
 

@@ -174,3 +174,12 @@ databaseChangeLog:
             constraintName: fk_applications_application_status_id_application_status
             referencedTableName: application_status
             referencedColumnNames: application_status_id
+  - changeSet:
+      id: 2-add-approved-application-status
+      author: com.crediya.dev
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO application_status(application_status_id, name, description)
+              VALUES (4, 'APPROVED', 'Approved');

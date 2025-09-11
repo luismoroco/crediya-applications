@@ -110,10 +110,15 @@ public class ApplicationUseCase {
 
           return repository.save(application);
         })
-        .flatMap(application ->
-          this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
-            .thenReturn(application)
-        )
+        .flatMap(application -> {
+          if (!List.of(ApplicationStatus.APPROVED, ApplicationStatus.REJECTED).contains(application.getApplicationStatus())) {
+            this.logger.info("Skipping status changing notification [applicationId={}][targetApplicationStatus={}]", application.getApplicationId(), dto.getApplicationStatus());
+            return Mono.just(application);
+          }
+
+          return this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
+            .thenReturn(application);
+        })
     ).doOnError(error -> this.logger.error("Error updating application [args={}][error={}]", dto, error.getMessage()));
   }
 
@@ -123,7 +128,7 @@ public class ApplicationUseCase {
   }
 
   public static Mono<Void> validateGetApplicationsDTOConstraints(GetApplicationsDTO dto) {
-    return ValidatorUtils.enumsValueOf(APPLICATION_STATUSES, dto.getApplicationStatuses(), ApplicationStatus.class) // TODO: this does not work
+    return ValidatorUtils.enumsValueOf(APPLICATION_STATUSES, dto.getApplicationStatuses(), ApplicationStatus.class)
       .then(ValidatorUtils.greaterOrEqualThan(PAGE, dto.getPage(), MINIMUM_PAGE))
       .then(ValidatorUtils.greaterOrEqualThan(PAGE_SIZE, dto.getPageSize(), MINIMUM_PAGE_SIZE));
   }
