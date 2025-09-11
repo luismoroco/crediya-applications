@@ -1,5 +1,5 @@
 server:
-  port: ${PORT}
+  port: "${PORT}"
 logging:
   level:
     root: "INFO"
@@ -7,10 +7,10 @@ logging:
     org.springframework.security: "DEBUG"
 spring:
   config:
-    import: optional:file:.env[.properties]
+    import: "optional:file:.env[.properties]"
   application:
     name: "crediya-applications"
-    version: 1.0.0
+    version: "1.0.0"
   devtools:
     add-properties: false
   h2:
@@ -21,23 +21,23 @@ spring:
     include: null
   liquibase:
     enabled: true
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    user: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
     change-log: "classpath:/db/changelog/db.changelog-master.yaml"
   security:
     oauth2:
       resourceserver:
         jwt:
-          secret-key: ${JWT_SECRET_KEY}
+          secret-key: "${JWT_SECRET_KEY}"
 adapters:
   r2dbc:
-    host: ${DB_HOST}
-    port: ${DB_PORT}
-    database: ${DB_NAME}
+    host: "${DB_HOST}"
+    port: "${DB_PORT}"
+    database: "${DB_NAME}"
     schema: "public"
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    username: "${DB_USER}"
+    password: "${DB_PASSWORD}"
 management:
   endpoints:
     web:
@@ -61,8 +61,8 @@ adapter:
         getUserByIdentityCardNumber: "/api/v1/users/{identity_card_number}"
         getUsers: "/api/v1/users"
   sqs:
-    region: ${AWS_SQS_CREDIYA_SQS_REGION}
-    queueUrl: ${AWS_SQS_CREDIYA_SQS_QUEUE_URL}
+    region: "${AWS_SQS_CREDIYA_SQS_REGION}"
+    queueUrl: "${AWS_SQS_CREDIYA_SQS_QUEUE_URL}"
     endpoint: "http://localhost:4566"
 resilience4j:
   circuitbreaker:
@@ -90,3 +90,12 @@ route:
     startApplication: "/api/v1/applications"
     getApplications: "/api/v1/applications"
     updateApplication: "/api/v1/applications/{application_id}"
+entrypoint:
+  sqs:
+    region: "us-east-1"
+    endpoint: "http://localhost:4566"
+    queueUrl: "http://localhost:4566/000000000000/sample"
+    waitTimeSeconds: 20
+    maxNumberOfMessages: 10
+    visibilityTimeoutSeconds: 10
+    numberOfThreads: 1
