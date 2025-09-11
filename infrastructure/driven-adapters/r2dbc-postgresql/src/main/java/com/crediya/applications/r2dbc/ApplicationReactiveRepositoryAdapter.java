@@ -4,6 +4,7 @@ import com.crediya.applications.model.application.gateways.dto.AggregatedApplica
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
+import com.crediya.applications.model.application.gateways.dto.MinimalLoanDTO;
 import com.crediya.applications.r2dbc.entity.ApplicationEntity;
 import com.crediya.applications.r2dbc.helper.ReactiveAdapterOperations;
 
@@ -35,5 +36,14 @@ public class ApplicationReactiveRepositoryAdapter extends ReactiveAdapterOperati
       .toList();
 
     return this.repository.findAggregatedApplications(applicationStatusIds, pageSize, (page - 1) * pageSize, emails.isEmpty() ? List.of(DISABLE_SEARCHING_KEY) : emails);
+  }
+
+  @Override
+  public Flux<MinimalLoanDTO> findMinimalLoans(List<ApplicationStatus> applicationStatuses, List<String> emails) {
+    List<Integer> applicationStatusIds = applicationStatuses.stream()
+      .map(ApplicationStatus::getCode)
+      .toList();
+
+    return this.repository.findMinimalLoans(applicationStatusIds, emails);
   }
 }

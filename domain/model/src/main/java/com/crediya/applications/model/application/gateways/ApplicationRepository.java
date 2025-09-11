@@ -1,7 +1,9 @@
 package com.crediya.applications.model.application.gateways;
 
+import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.model.application.Application;
+import com.crediya.applications.model.application.gateways.dto.MinimalLoanDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,4 +15,6 @@ public interface ApplicationRepository {
   Flux<AggregatedApplicationDTO> findAggregatedApplications(List<String> applicationStatus, Integer page, Integer pageSize, List<String> emails);
 
   Mono<Application> findById(Long applicationId);
+
+  Flux<MinimalLoanDTO> findMinimalLoans(List<ApplicationStatus> applicationStatuses, List<String> emails);
 }

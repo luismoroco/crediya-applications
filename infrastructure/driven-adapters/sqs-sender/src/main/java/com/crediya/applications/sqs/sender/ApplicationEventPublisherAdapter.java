@@ -2,6 +2,7 @@ package com.crediya.applications.sqs.sender;
 
 import com.crediya.applications.model.application.gateways.ApplicationEventPublisher;
 import com.crediya.applications.model.application.gateways.event.ApplicationUpdatedEvent;
+import com.crediya.applications.model.application.gateways.event.AutomaticEvaluationLoanRequestStartedEvent;
 import com.crediya.applications.sqs.sender.config.SQSSenderProperties;
 import com.crediya.common.logging.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,11 @@ public class ApplicationEventPublisherAdapter implements ApplicationEventPublish
     @Override
     public Mono<String> notifyApplicationUpdated(ApplicationUpdatedEvent event) {
         return this.send(event);
+    }
+
+    @Override
+    public Mono<String> notifyAutomaticEvaluationLoanRequestStarted(AutomaticEvaluationLoanRequestStartedEvent event) {
+        return Mono.just("SENT");
     }
 
     private Mono<String> send(Object object) {

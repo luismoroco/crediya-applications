@@ -1,6 +1,7 @@
 package com.crediya.applications.r2dbc;
 
 import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
+import com.crediya.applications.model.application.gateways.dto.MinimalLoanDTO;
 import com.crediya.applications.r2dbc.entity.ApplicationEntity;
 
 import org.springframework.data.r2dbc.repository.Query;
@@ -37,6 +38,23 @@ public interface ApplicationReactiveRepository extends ReactiveCrudRepository<Ap
     @Param("application_status_ids") List<Integer> applicationStatusIds,
     @Param("pageSize") int pageSize,
     @Param("offset") int offset,
+    @Param("emails") List<String> emails
+  );
+
+  @Query("""
+    SELECT 
+        a.application_id        AS loanId,
+        a.amount                AS amount,
+        a.deadline              AS deadline,
+        lt.interest_rate        AS interest_rate
+    FROM applications a
+    LEFT JOIN loan_type lt 
+        ON a.loan_type_id = lt.loan_type_id
+    WHERE a.application_status_id IN (:application_status_ids)
+      AND a.email IN (:emails)
+    """)
+  Flux<MinimalLoanDTO> findMinimalLoans(
+    @Param("application_status_ids") List<Integer> applicationStatusIds,
     @Param("emails") List<String> emails
   );
 }
