@@ -43,7 +43,7 @@ public interface ApplicationReactiveRepository extends ReactiveCrudRepository<Ap
 
   @Query("""
     SELECT 
-        a.application_id        AS loanId,
+        a.application_id        AS loan_id,
         a.amount                AS amount,
         a.deadline              AS deadline,
         lt.interest_rate        AS interest_rate

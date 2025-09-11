@@ -31,7 +31,7 @@ public class ApplicationEventPublisherAdapter implements ApplicationEventPublish
 
     @Override
     public Mono<String> notifyAutomaticEvaluationLoanRequestStarted(AutomaticEvaluationLoanRequestStartedEvent event) {
-        return Mono.just("SENT");
+        return this.send(event);
     }
 
     private Mono<String> send(Object object) {
