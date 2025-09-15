@@ -40,6 +40,8 @@ public class ApplicationUseCase {
   public static final String APPLICATION_STATUSES = "application_statuses";
   public static final String APPLICATION_ID = "application_id";
   public static final String EMAILS = "emails";
+  private static final List<ApplicationStatus> NOTIFIABLE_APPLICATION_STATUSES = List.of(ApplicationStatus.APPROVED, ApplicationStatus.REJECTED);
+  private static final List<ApplicationStatus> APPLICATION_STATUSES_FOR_OVERVIEW = List.of(ApplicationStatus.APPROVED);
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
@@ -84,7 +86,7 @@ public class ApplicationUseCase {
           }
 
           return this.repository.findMinimalLoans(
-              List.of(ApplicationStatus.APPROVED),
+              APPLICATION_STATUSES_FOR_OVERVIEW,
               List.of(userDTO.getEmail())
             )
             .collectList()
@@ -147,7 +149,7 @@ public class ApplicationUseCase {
           return repository.save(application);
         })
         .flatMap(application -> {
-          if (!List.of(ApplicationStatus.APPROVED, ApplicationStatus.REJECTED).contains(application.getApplicationStatus())) {
+          if (!NOTIFIABLE_APPLICATION_STATUSES.contains(application.getApplicationStatus())) {
             this.logger.info("Skipping status changing notification [applicationId={}][targetApplicationStatus={}]", application.getApplicationId(), dto.getApplicationStatus());
             return Mono.just(application);
           }
