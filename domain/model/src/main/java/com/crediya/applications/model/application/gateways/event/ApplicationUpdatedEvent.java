@@ -2,7 +2,10 @@ package com.crediya.applications.model.application.gateways.event;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.loantype.LoanType;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -16,14 +19,16 @@ public class ApplicationUpdatedEvent {
   private Integer deadline;
   private ApplicationStatus applicationStatus;
   private String email;
+  private BigDecimal interestRate;
 
-  public static ApplicationUpdatedEvent from(Application application) {
+  public static ApplicationUpdatedEvent from(Application application, LoanType loanType) {
     return ApplicationUpdatedEvent.builder()
       .applicationId(application.getApplicationId())
       .amount(application.getAmount())
       .deadline(application.getDeadline())
       .applicationStatus(application.getApplicationStatus())
       .email(application.getEmail())
+      .interestRate(loanType.getInterestRate())
       .build();
   }
 

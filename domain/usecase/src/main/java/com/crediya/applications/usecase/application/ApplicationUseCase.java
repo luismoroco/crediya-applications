@@ -154,7 +154,12 @@ public class ApplicationUseCase {
             return Mono.just(application);
           }
 
-          return this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application))
+          return this.loanTypeRepository.findById(application.getLoanTypeId())
+            .switchIfEmpty(Mono.defer(() -> {
+              this.logger.error("LoanType not found [loanTypeId={}]", application.getLoanTypeId());
+              return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, application.getLoanTypeId())));
+            }))
+            .flatMap(loanType -> this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application, loanType)))
             .thenReturn(application);
         })
     )
