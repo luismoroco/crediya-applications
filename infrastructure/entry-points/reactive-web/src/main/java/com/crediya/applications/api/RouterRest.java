@@ -2,6 +2,7 @@ package com.crediya.applications.api;
 
 import com.crediya.applications.api.config.ApplicationPath;
 import com.crediya.applications.usecase.application.dto.StartApplicationDTO;
+import com.crediya.applications.usecase.application.dto.UpdateApplicationDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -104,6 +105,48 @@ public class RouterRest {
               example = "PENDING"
             )
           },
+          responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+          }
+        )
+      ),
+      @RouterOperation(
+        path = "/api/v1/applications/{application_id}",
+        produces = { "application/json" },
+        beanClass = Handler.class,
+        method = RequestMethod.PUT,
+        beanMethod = "updateApplication",
+        operation = @Operation(
+          operationId = "updateApplication",
+          summary = "Update applications",
+          security = @SecurityRequirement(name = "bearerAuth"),
+          parameters = {
+            @Parameter(
+              name = "application_id",
+              in = ParameterIn.PATH,
+              required = true,
+              description = "Applications's id",
+              schema = @Schema(type = "integer", example = "1")
+            ),
+          },
+          requestBody = @RequestBody(
+            required = true,
+            content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = UpdateApplicationDTO.class),
+              examples = {
+                @ExampleObject(
+                  name = "Example",
+                  value = """
+                                  {
+                                    "applicationStatus": "APPROVED"
+                                  }
+                                  """
+                )
+              }
+            )
+          ),
           responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
