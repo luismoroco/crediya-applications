@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record SQSSenderProperties(
   String region,
   SQSConfig crediyaNotifications,
-  SQSConfig crediyaRiskAnalysis) {
+  SQSConfig crediyaRiskAnalysis,
+  SQSConfig crediyaReporting) {
 
   public record SQSConfig(
     String queueUrl) {

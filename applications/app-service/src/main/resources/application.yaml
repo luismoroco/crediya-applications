@@ -66,6 +66,8 @@ adapter:
       queueUrl: "${AWS_SQS_CREDIYA_SQS_QUEUE_URL}"
     crediya-risk-analysis:
       queueUrl: "${AWS_SQS_CREDIYA_RISK_ANALYSIS_QUEUE_URL}"
+    crediya-reporting:
+      queueUrl: "${AWS_SQS_CREDIYA_SQS_REPORTING_QUEUE_URL}"
 resilience4j:
   circuitbreaker:
     instances:

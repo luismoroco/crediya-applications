@@ -5,6 +5,7 @@ import com.crediya.applications.model.application.ApplicationStatus;
 import com.crediya.applications.model.application.gateways.ApplicationEventPublisher;
 import com.crediya.applications.model.application.gateways.dto.AggregatedApplicationDTO;
 import com.crediya.applications.model.application.gateways.ApplicationRepository;
+import com.crediya.applications.model.application.gateways.event.ApplicationApprovedEvent;
 import com.crediya.applications.model.application.gateways.event.ApplicationUpdatedEvent;
 import com.crediya.applications.model.application.gateways.event.AutomaticEvaluationLoanRequestStartedEvent;
 import com.crediya.applications.model.loantype.LoanType;
@@ -42,6 +43,7 @@ public class ApplicationUseCase {
   public static final String EMAILS = "emails";
   private static final List<ApplicationStatus> NOTIFIABLE_APPLICATION_STATUSES = List.of(ApplicationStatus.APPROVED, ApplicationStatus.REJECTED);
   private static final List<ApplicationStatus> APPLICATION_STATUSES_FOR_OVERVIEW = List.of(ApplicationStatus.APPROVED);
+  private static final List<ApplicationStatus> APPLICATION_STATUSES_FOR_REPORTING = List.of(ApplicationStatus.APPROVED);
 
   private final ApplicationRepository repository;
   private final LoanTypeRepository loanTypeRepository;
@@ -160,6 +162,14 @@ public class ApplicationUseCase {
               return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(LOAN_TYPE_ID, application.getLoanTypeId())));
             }))
             .flatMap(loanType -> this.eventPublisher.notifyApplicationUpdated(ApplicationUpdatedEvent.from(application, loanType)))
+            .thenReturn(application);
+        })
+        .flatMap(application -> {
+          if (!APPLICATION_STATUSES_FOR_REPORTING.contains(application.getApplicationStatus())) {
+            return Mono.just(application);
+          }
+
+          return this.eventPublisher.notifyApplicationApproved(ApplicationApprovedEvent.of(application))
             .thenReturn(application);
         })
     )

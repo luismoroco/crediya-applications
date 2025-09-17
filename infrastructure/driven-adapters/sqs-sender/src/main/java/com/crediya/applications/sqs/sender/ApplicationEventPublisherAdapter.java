@@ -1,6 +1,7 @@
 package com.crediya.applications.sqs.sender;
 
 import com.crediya.applications.model.application.gateways.ApplicationEventPublisher;
+import com.crediya.applications.model.application.gateways.event.ApplicationApprovedEvent;
 import com.crediya.applications.model.application.gateways.event.ApplicationUpdatedEvent;
 import com.crediya.applications.model.application.gateways.event.AutomaticEvaluationLoanRequestStartedEvent;
 import com.crediya.applications.sqs.sender.config.SQSSenderProperties;
@@ -34,6 +35,11 @@ public class ApplicationEventPublisherAdapter implements ApplicationEventPublish
         return this.send(event, this.properties.crediyaRiskAnalysis());
     }
 
+    @Override
+    public Mono<String> notifyApplicationApproved(ApplicationApprovedEvent event) {
+        return this.send(event, this.properties.crediyaReporting());
+    }
+
     private Mono<String> send(Object object, SQSSenderProperties.SQSConfig config) {
         return Mono.fromCallable(() -> {
             this.logger.info("Sending event [args={}]", object);
@@ -43,7 +49,7 @@ public class ApplicationEventPublisherAdapter implements ApplicationEventPublish
                 .build();
            })
           .flatMap(request -> Mono.fromFuture(this.client.sendMessage(request)))
-          .doOnNext(response -> this.logger.info("Event sent [messageId={}]", response.messageId()))
+          .doOnNext(response -> this.logger.info("Event sent [messageId={}][queueUrl={}]", response.messageId(), config.queueUrl()))
           .map(SendMessageResponse::messageId);
     }
 }
