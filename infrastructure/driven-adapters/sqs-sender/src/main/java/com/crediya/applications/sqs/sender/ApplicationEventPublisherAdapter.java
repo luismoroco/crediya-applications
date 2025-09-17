@@ -26,19 +26,19 @@ public class ApplicationEventPublisherAdapter implements ApplicationEventPublish
 
     @Override
     public Mono<String> notifyApplicationUpdated(ApplicationUpdatedEvent event) {
-        return this.send(event);
+        return this.send(event, this.properties.crediyaNotifications());
     }
 
     @Override
     public Mono<String> notifyAutomaticEvaluationLoanRequestStarted(AutomaticEvaluationLoanRequestStartedEvent event) {
-        return this.send(event);
+        return this.send(event, this.properties.crediyaRiskAnalysis());
     }
 
-    private Mono<String> send(Object object) {
+    private Mono<String> send(Object object, SQSSenderProperties.SQSConfig config) {
         return Mono.fromCallable(() -> {
             this.logger.info("Sending event [args={}]", object);
             return SendMessageRequest.builder()
-                .queueUrl(this.properties.queueUrl())
+                .queueUrl(config.queueUrl())
                 .messageBody(this.mapper.writeValueAsString(object))
                 .build();
            })

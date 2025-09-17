@@ -62,8 +62,10 @@ adapter:
         getUsers: "/api/v1/users"
   sqs:
     region: "${AWS_SQS_CREDIYA_SQS_REGION}"
-    queueUrl: "${AWS_SQS_CREDIYA_SQS_QUEUE_URL}"
-    endpoint: "http://localhost:4566"
+    crediya-notifications:
+      queueUrl: "${AWS_SQS_CREDIYA_SQS_QUEUE_URL}"
+    crediya-risk-analysis:
+      queueUrl: "${AWS_SQS_CREDIYA_RISK_ANALYSIS_QUEUE_URL}"
 resilience4j:
   circuitbreaker:
     instances:
