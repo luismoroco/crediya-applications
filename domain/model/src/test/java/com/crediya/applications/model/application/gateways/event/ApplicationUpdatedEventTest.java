@@ -2,11 +2,14 @@ package com.crediya.applications.model.application.gateways.event;
 
 import com.crediya.applications.model.application.Application;
 import com.crediya.applications.model.application.ApplicationStatus;
+import com.crediya.applications.model.loantype.LoanType;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ApplicationUpdatedEventTest {
+class ApplicationUpdatedEventTest {
 
   @Test
   void testFromApplication_createsCorrectEvent() {
@@ -19,7 +22,11 @@ public class ApplicationUpdatedEventTest {
       .loanTypeId(1L)
       .build();
 
-    ApplicationUpdatedEvent event = ApplicationUpdatedEvent.from(application);
+    LoanType loanType = LoanType.builder()
+      .interestRate(BigDecimal.valueOf(5000))
+      .build();
+
+    ApplicationUpdatedEvent event = ApplicationUpdatedEvent.from(application, loanType);
 
     assertThat(event.getApplicationId()).isEqualTo(application.getApplicationId());
     assertThat(event.getAmount()).isEqualTo(application.getAmount());

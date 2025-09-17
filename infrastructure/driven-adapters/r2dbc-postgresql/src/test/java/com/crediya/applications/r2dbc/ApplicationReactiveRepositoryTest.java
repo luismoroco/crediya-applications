@@ -28,13 +28,13 @@ class ApplicationReactiveRepositoryTest {
       .interestRate(new BigDecimal("0.10"))
       .build();
 
-    when(repository.findAggregatedApplications(List.of(1), 10, 0))
+    when(repository.findAggregatedApplications(List.of(1), 10, 0, List.of()))
       .thenReturn(Flux.just(app));
 
-    StepVerifier.create(repository.findAggregatedApplications(List.of(1), 10, 0))
+    StepVerifier.create(repository.findAggregatedApplications(List.of(1), 10, 0, List.of()))
       .expectNextMatches(a -> a.getApplicationId() == 1L && a.getEmail().equals("unit@test.com"))
       .verifyComplete();
 
-    verify(repository, times(1)).findAggregatedApplications(List.of(1), 10, 0);
+    verify(repository, times(1)).findAggregatedApplications(List.of(1), 10, 0, List.of());
   }
 }

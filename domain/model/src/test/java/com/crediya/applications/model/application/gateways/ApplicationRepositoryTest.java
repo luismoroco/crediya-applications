@@ -69,10 +69,10 @@ class ApplicationRepositoryTest {
       .totalDebt(BigDecimal.valueOf(5000))
       .build();
 
-    when(applicationRepository.findAggregatedApplications(statuses, page, pageSize))
+    when(applicationRepository.findAggregatedApplications(statuses, page, pageSize, List.of()))
       .thenReturn(Flux.just(app));
 
-    StepVerifier.create(applicationRepository.findAggregatedApplications(statuses, page, pageSize))
+    StepVerifier.create(applicationRepository.findAggregatedApplications(statuses, page, pageSize, List.of()))
       .expectNextMatches(a ->
         a.getApplicationId().equals(1L) &&
           a.getAmount().equals(10000L) &&
@@ -88,6 +88,6 @@ class ApplicationRepositoryTest {
       .verifyComplete();
 
     verify(applicationRepository, times(1))
-      .findAggregatedApplications(statuses, page, pageSize);
+      .findAggregatedApplications(statuses, page, pageSize, List.of());
   }
 }

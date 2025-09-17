@@ -43,16 +43,4 @@ class SQSConfigTest {
         var loggingMetricPublisher = LoggingMetricPublisher.create();
         assertThat(sqsConfig.configSqs(sqsProperties, loggingMetricPublisher)).isNotNull();
     }
-
-    @Test
-    void configSqsWhenEndpointIsNotNull() {
-        var loggingMetricPublisher = LoggingMetricPublisher.create();
-        when(sqsProperties.endpoint()).thenReturn("http://localhost:4566");
-        assertThat(sqsConfig.configSqs(sqsProperties, loggingMetricPublisher)).isNotNull();
-    }
-
-    @Test
-    void resolveEndpointIsNull() {
-        assertThat(sqsConfig.resolveEndpoint(sqsProperties)).isNull();
-    }
 }

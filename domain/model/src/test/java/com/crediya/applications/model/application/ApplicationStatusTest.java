@@ -21,7 +21,7 @@ class ApplicationStatusTest {
   @Test
   void testValuesCount() {
     ApplicationStatus[] values = ApplicationStatus.values();
-    assertEquals(3, values.length, "Only 3 status values");
+    assertEquals(4, values.length, "Only 4 status values");
   }
 
   @Test

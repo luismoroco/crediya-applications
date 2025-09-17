@@ -10,13 +10,14 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ApplicationEventPublisherAdapterTest {
+class ApplicationEventPublisherAdapterTest {
 
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
     .withBean(SQSSenderProperties.class, () -> new SQSSenderProperties(
       "us-east-1",
-      "https://sqs.us-east-1.amazonaws.com/123456789012/my-queue",
-      "http://localhost:4566"
+      new SQSSenderProperties.SQSConfig("https://sqs.us-east-1.amazonaws.com/123456789012/crediya-notifications"),
+      new SQSSenderProperties.SQSConfig("https://sqs.us-east-1.amazonaws.com/123456789012/crediya-risk-analysis"),
+      new SQSSenderProperties.SQSConfig("https://sqs.us-east-1.amazonaws.com/123456789012/crediya-reporting")
     ))
     .withBean(MetricPublisher.class, Mockito::mock)
     .withUserConfiguration(SQSSenderConfig.class);

@@ -98,9 +98,9 @@ class ApplicationReactiveRepositoryAdapterTest {
         ap.setApplicationId(1L);
         ap.setStatus(ApplicationStatus.PENDING);
 
-        when(repositoryAdapter.findAggregatedApplications(List.of("PENDING"), 1, 3)).thenReturn(Flux.just(ap));
+        when(repositoryAdapter.findAggregatedApplications(List.of("PENDING"), 1, 3, List.of())).thenReturn(Flux.just(ap));
 
-        StepVerifier.create(repositoryAdapter.findAggregatedApplications(List.of("PENDING"), 1, 3))
+        StepVerifier.create(repositoryAdapter.findAggregatedApplications(List.of("PENDING"), 1, 3, List.of()))
           .expectNextMatches(u -> u.getApplicationId().equals(ap.getApplicationId()))
           .verifyComplete();
     }
